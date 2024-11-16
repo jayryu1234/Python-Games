@@ -7,6 +7,7 @@ side of the screen.
 
 """
 import pygame
+import keyboard
 from dataclasses import dataclass
 
 @dataclass
@@ -60,7 +61,10 @@ while running:
         player_y_velocity = -settings.jump_y_velocity
         player_x_velocity = settings.jump_x_velocity * x_direction
         
-        is_jumping = True
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_SPACE]:
+            is_jumping = True
         
     else: # the player is jumping
         # Update player position. Gravity is always pulling the player down,
