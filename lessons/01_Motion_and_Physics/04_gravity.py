@@ -92,4 +92,6 @@ while running:
     pygame.display.flip()
     clock.tick(settings.tick_rate)
 
+    
+
 pygame.quit()

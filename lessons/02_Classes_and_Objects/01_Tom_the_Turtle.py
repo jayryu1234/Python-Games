@@ -6,13 +6,26 @@ objects.
 
 """
 import math
-
+import random
 import pygame
 
-
 def event_loop():
+    turtle = Turtle(screen, screen.get_width() // 2, screen.get_height() // 2) 
     """Wait until user closes the window"""
     while True:
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_a]:
+            turtle.left(45)
+        if keys[pygame.K_d]:
+            turtle.left(-45)
+        if keys[pygame.K_w]:
+            turtle.forward(45)
+        if keys[pygame.K_s]:
+            turtle.forward(-45)
+        if keys[pygame.K_SPACE]:
+            turtle.make_square()
+        screen.fill("white")
+        pygame.draw.circle(screen, "white", (turtle.x, turtle.y), 5)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
@@ -23,7 +36,10 @@ class Turtle:
         self.y = y
         self.screen = screen
         self.angle = 0  # Angle in degrees, starting facing right
-
+    def make_square(self):
+        for _ in range(4):
+            self.forward(100)  # Move forward by 100 pixels
+            self.left(90)  # Turn left by 90 degrees
     def forward(self, distance):
         # Calculate new position based on current angle
         radian_angle = math.radians(self.angle)
@@ -62,18 +78,22 @@ white = (255, 255, 255)
 black = (0, 0, 0)
 
 screen.fill(white)
-turtle = Turtle(screen, screen.get_width() // 2, screen.get_height() // 2)  # Start at the center of the screen
+ # Start at the center of the screen
 
 # Draw a square using turtle-style commands
-for _ in range(4):
-    turtle.forward(100)  # Move forward by 100 pixels
-    turtle.left(90)  # Turn left by 90 degrees
+
 
 # Display the drawing
 pygame.display.flip()
-
+def make_and_move_turtle():
+    
+    turtley = Turtle(screen, random.randint(1, 100), random.randint(1, 100))  # Start at the center of the screen
+    print(turtley.x)
+    print(turtley.y)
+make_and_move_turtle()
 # Wait to quit
 event_loop()
 
 # Quit Pygame
 pygame.quit()
+
