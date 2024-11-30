@@ -11,10 +11,21 @@ import pygame
 
 
 class Colors:
-    """Constants for Colors"""
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
     RED = (255, 0, 0)
+    """Constants for Colors"""
+    def colorfinder(color):
+        if color == 'WHITE':
+            return (255, 255, 255)
+        elif color == "BLACK":
+            return (0, 0, 0)
+        elif color == "RED":
+            return (255, 0, 0)
+        else:
+            return (0, 255, 0)
+
+    
 
 
 class GameSettings:
@@ -29,7 +40,28 @@ class GameSettings:
     player_width: int = 20
     player_height: int = 20
     player_jump_velocity: float = 15
-
+class Player2Settings:
+    width: int = 500
+    height: int = 500
+    gravity: float = 0.3
+    player_start_x: int = 200
+    player_start_y: int = None
+    player_v_y: float = 0  # Initial y velocity
+    player_v_x: float = 10  # Initial x velocity
+    player_width: int = 10
+    player_height: int = 10
+    player_jump_velocity: float = 15
+class Player3Settings:
+    width: int = 500
+    height: int = 500
+    gravity: float = 0.3
+    player_start_x: int = 200
+    player_start_y: int = None
+    player_v_y: float = 200  # Initial y velocity
+    player_v_x: float = 20  # Initial x velocity
+    player_width: int = 35
+    player_height: int = 35
+    player_jump_velocity: float = 0
 
 class Game:
     """Main object for the top level of the game. Holds the main loop and other
@@ -46,7 +78,7 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.players = []
-
+        
     def add_player(self, player):
         self.players.append(player)
 
@@ -60,6 +92,7 @@ class Game:
                     self.running = False
 
             self.screen.fill(Colors.WHITE)
+            
 
             for player in self.players:
                 player.update()
@@ -74,10 +107,10 @@ class Game:
 class Player:
     """Player class, just a bouncing rectangle"""
 
-    def __init__(self, game: Game):
+    def __init__(self, settings, color):
         self.game = game
-        settings = game.settings
-
+        self.settings = settings
+        self.color = color
         self.width = settings.player_width
         self.height = settings.player_height
       
@@ -98,7 +131,7 @@ class Player:
 
     def update_y(self):
         """Update the player's y position based on gravity and velocity"""
-        self.v_y += self.game.settings.gravity  # Add gravity to the y velocity
+        self.v_y += self.settings.gravity  # Add gravity to the y velocity
         self.y += self.v_y  # Update the player's y position, based on the current velocity
 
         if self.y >= self.game.settings.height - self.height:
@@ -125,14 +158,19 @@ class Player:
             self.is_jumping = True
 
     def draw(self, screen):
-        pygame.draw.rect(screen, Colors.BLACK, (self.x, self.y, self.width, self.height))
+        pygame.draw.rect(screen, Colors.colorfinder(self.color), (self.x, self.y, self.width, self.height))
 
-
+thirdsettings = Player3Settings()
+othersettingsa = Player2Settings()
 settings = GameSettings()
+
 game = Game(settings)
-
-p1 = Player(game)
+game1 = Game(othersettingsa)
+game2 = Game(thirdsettings)
+p1 = Player(game, "RED")
+p2 = Player(game1, "BLACK")
+p3 = Player(game2, "GREEN")
 game.add_player(p1)
-
-
+game.add_player(p2)
+game.add_player(p3)
 game.run()
