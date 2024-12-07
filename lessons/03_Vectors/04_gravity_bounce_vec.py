@@ -33,7 +33,7 @@ class GameSettings:
     player_width: int = 20
     player_height: int = 20
     player_jump_velocity: float = 15
-    frame_rate: int = 15
+    frame_rate: int = 60
 
 
 class Game:
@@ -91,6 +91,8 @@ class Player:
         
         # Player's velocity
         self.vel = pygame.Vector2(settings.player_v_x, settings.player_v_y)  # Velocity vector
+    def draw_line(self, screen):
+        pygame.draw.line(screen, (self.pos), (self.pos[0]+self.vel[0]+self.pos[1]+self.vel[1]))
 
 
 
@@ -138,6 +140,7 @@ class Player:
     
     def update(self):
         """Update player position, continuously jumping"""
+        self.draw_line()
         self.update_jump()
         self.update_v()
         self.update_pos()
@@ -191,8 +194,8 @@ class Player:
             self.vel += self.v_jump
          
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, Colors.PLAYER_COLOR, (self.pos.x, self.pos.y, self.width, self.height))
+    def draw(self):
+        pygame.draw.rect(Colors.PLAYER_COLOR, (self.pos.x, self.pos.y, self.width, self.height))
 
 
 settings = GameSettings()
