@@ -62,7 +62,7 @@ class Game:
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     self.running = False
 
-            player.update()
+            player.update(self.screen)
 
             self.screen.fill(Colors.BACKGROUND_COLOR)
             player.draw(self.screen)
@@ -91,8 +91,8 @@ class Player:
         
         # Player's velocity
         self.vel = pygame.Vector2(settings.player_v_x, settings.player_v_y)  # Velocity vector
-    def draw_line(self, screen):
-        pygame.draw.line(screen, (self.pos), (self.pos[0]+self.vel[0]+self.pos[1]+self.vel[1]))
+
+        
 
 
 
@@ -138,9 +138,8 @@ class Player:
     
     # Updates
     
-    def update(self):
+    def update(self, screen):
         """Update player position, continuously jumping"""
-        self.draw_line()
         self.update_jump()
         self.update_v()
         self.update_pos()
@@ -194,8 +193,9 @@ class Player:
             self.vel += self.v_jump
          
 
-    def draw(self):
-        pygame.draw.rect(Colors.PLAYER_COLOR, (self.pos.x, self.pos.y, self.width, self.height))
+    def draw(self, screen):
+        pygame.draw.rect(screen, Colors.PLAYER_COLOR, (self.pos.x, self.pos.y, self.width, self.height))
+        pygame.draw.line(screen, (0, 0, 255), (self.pos), (self.pos[0]+self.vel[0], self.pos[1]+self.vel[1]))
 
 
 settings = GameSettings()

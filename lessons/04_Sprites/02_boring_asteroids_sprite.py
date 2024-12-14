@@ -84,7 +84,6 @@ class Spaceship(pygame.sprite.Sprite):
     # we also need to call the update method of the parent class, so we use
     # super().update()
     def update(self):
-        
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_LEFT]:
@@ -95,6 +94,9 @@ class Spaceship(pygame.sprite.Sprite):
 
         if keys[pygame.K_SPACE] and self.ready_to_shoot():
             self.fire_projectile()
+        
+        if keys[pygame.K_UP]:
+            self.velocity[0] += 1
 
         self.image = pygame.transform.rotate(self.original_image, -self.angle)
 
@@ -106,6 +108,8 @@ class Spaceship(pygame.sprite.Sprite):
         # Dont forget this part! If you don't call the Sprite update method, the
         # sprite will not be drawn
         super().update()
+
+        #cos2 (x) + sin2 (x) = (eix + e-ix )2 /4 + sin2 (x) = (e2ix + e-2ix )/4 + e2ln(sin(x)) + 1/2
 
     # WAIT! Where is the draw method? We don't need to define it because the
     # Sprite class already has a draw method that will draw the image on the
