@@ -9,7 +9,8 @@ but it does not. It's a work in progress, and you'll have to finish it.
 import pygame
 import random
 from pathlib import Path
-
+import time
+jumpCount = 10
 # Initialize Pygame
 pygame.init()
 
@@ -79,13 +80,13 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = 50
         self.rect.y = HEIGHT - PLAYER_SIZE - 10
         self.speed = player_speed
+    def jump(self):
+        pass
 
     def update(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_UP]:
-            self.rect.y -= self.speed
-        if keys[pygame.K_DOWN]:
-            self.rect.y += self.speed
+        if keys[pygame.K_SPACE]:
+            Player.jump(self)
 
         # Keep the player on screen
         if self.rect.top < 0:
@@ -98,69 +99,75 @@ player = Player()
 player_group = pygame.sprite.GroupSingle(player)
 
 # Add obstacles periodically
-def add_obstacle(obstacles):
-    # random.random() returns a random float between 0 and 1, so a value
-    # of 0.25 means that there is a 25% chance of adding an obstacle. Since
-    # add_obstacle() is called every 100ms, this means that on average, an
-    # obstacle will be added every 400ms.
-    # The combination of the randomness and the time allows for random
-    # obstacles, but not too close together. 
-    
-    if random.random() < 0.4:
-        obstacle = Obstacle()
-        obstacles.add(obstacle)
-        return 1
-    return 0
-
-
-# Main game loop
-def game_loop():
-    clock = pygame.time.Clock()
-    game_over = False
-    last_obstacle_time = pygame.time.get_ticks()
-
-    # Group for obstacles
-    obstacles = pygame.sprite.Group()
-
-    player = Player()
-
-    obstacle_count = 0
-
-    while not game_over:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-
-        # Update player
-        player.update()
-
-        # Add obstacles and update
-        if pygame.time.get_ticks() - last_obstacle_time > 500:
-            last_obstacle_time = pygame.time.get_ticks()
-            obstacle_count += add_obstacle(obstacles)
+class Game():
+    def __init__(self):
+        pygame.init()
+        self.scene = 0
+    def add_obstacle(obstacles):
+        # random.random() returns a random float between 0 and 1, so a value
+        # of 0.25 means that there is a 25% chance of adding an obstacle. Since
+        # add_obstacle() is called every 100ms, this means that on average, an
+        # obstacle will be added every 400ms.
+        # The combination of the randomness and the time allows for random
+        # obstacles, but not too close together. 
         
-        obstacles.update()
+        if random.random() < 0.4:
+            obstacle = Obstacle()
+            obstacles.add(obstacle)
+            return 1
+        return 0
 
-        # Check for collisions
-        collider = pygame.sprite.spritecollide(player, obstacles, dokill=False)
-        if collider:
-            collider[0].explode()
-       
-        # Draw everything
-        screen.fill(WHITE)
-        pygame.draw.rect(screen, BLUE, player)
-        obstacles.draw(screen)
 
-        # Display obstacle count
-        obstacle_text = font.render(f"Obstacles: {obstacle_count}", True, BLACK)
-        screen.blit(obstacle_text, (10, 10))
+    # Main game loop
+    def game_loop(self):
+        clock = pygame.time.Clock()
+        game_over = False
+        last_obstacle_time = pygame.time.get_ticks()
 
-        pygame.display.update()
-        clock.tick(FPS)
+        # Group for obstacles
+        obstacles = pygame.sprite.Group()
+
+        player = Player()
+
+        obstacle_count = 0
+
+        while not self.scene== 1:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+
+            # Update player
+            player.update()
+
+            # Add obstacles and update
+            if pygame.time.get_ticks() - last_obstacle_time > 500:
+                last_obstacle_time = pygame.time.get_ticks()
+                obstacle_count += Game.add_obstacle(obstacles)
+            
+            obstacles.update()
+
+            # Check for collisions
+            collider = pygame.sprite.spritecollide(player, obstacles, dokill=False)
+            if collider:
+                self.scene =  1
+                collider[0].explode()
+        
+            # Draw everything
+            screen.fill(WHITE)
+            pygame.draw.rect(screen, BLUE, player)
+            obstacles.draw(screen)
+
+            # Display obstacle count
+            obstacle_text = font.render(f"Obstacles: {obstacle_count}", True, BLACK)
+            screen.blit(obstacle_text, (10, 10))
+
+            pygame.display.update()
+            clock.tick(FPS)
 
     # Game over screen
     screen.fill(WHITE)
 
 if __name__ == "__main__":
-    game_loop()
+    game = Game()
+    game.game_loop()
