@@ -71,6 +71,19 @@ class Obstacle(pygame.sprite.Sprite):
 
 
 # Define a player class
+
+class  Settings():
+    screen_width: int = 500
+    screen_height: int = 500
+    player_size: int = 10
+    player_x: int = 100 # Initial x position of the player
+    gravity: float = 0.3 # acelleration, the change in velocity per frame
+    jump_velocity: int = 15
+    white: tuple = (255, 255, 255)
+    black: tuple = (0, 0, 0)
+    tick_rate: int = 30 # Frames per second
+
+settings = Settings()
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -80,19 +93,31 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = 50
         self.rect.y = HEIGHT - PLAYER_SIZE - 10
         self.speed = player_speed
-    def jump(self):
-        pass
+        self.is_jumping = True
 
     def update(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE]:
-            Player.jump(self)
+        if keys[pygame.K_SPACE] and not self.is_jumping:
+        # Jumping means that the player is going up. The top of the 
+        # screen is y=0, and the bottom is y=SCREEN_HEIGHT. So, to go up,
+        # we need to have a negative y velocity
+            self.speed = -12
+            self.is_jumping = True 
 
-        # Keep the player on screen
-        if self.rect.top < 0:
+    # Update player position. Gravity is always pulling the player down,
+    # which is the positive y direction, so we add GRAVITY to the y velocity
+    # to make the player go up more slowly. Eventually, the player will have
+    # a positive y velocity, and gravity will pull the player down.
+        self.speed += 1
+        self.rect.y += self.speed
+
+        if self.rect.top < 0 :
             self.rect.top = 0
+            self.speed = 0
         if self.rect.bottom > HEIGHT:
             self.rect.bottom = HEIGHT
+            self.speed = 0
+            self.is_jumping = False
 
 # Create a player object
 player = Player()
@@ -159,7 +184,7 @@ class Game():
             obstacles.draw(screen)
 
             # Display obstacle count
-            obstacle_text = font.render(f"Obstacles: {obstacle_count}", True, BLACK)
+            obstacle_text = font.render(f"Score: {obstacle_count}", True, BLACK)
             screen.blit(obstacle_text, (10, 10))
 
             pygame.display.update()

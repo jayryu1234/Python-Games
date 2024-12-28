@@ -35,8 +35,6 @@ class GameSettings:
 # Initialize game settings
 settings = GameSettings()
 
-
-
 # Initialize screen
 screen = pygame.display.set_mode((settings.screen_width, settings.screen_height))
 
