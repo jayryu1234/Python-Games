@@ -13,7 +13,6 @@ import time
 jumpCount = 10
 # Initialize Pygame
 pygame.init()
-
 images_dir = Path(__file__).parent / "images" if (Path(__file__).parent / "images").exists() else Path(__file__).parent / "assets"
 
 # Screen dimensions
@@ -25,7 +24,6 @@ pygame.display.set_caption("Dino Jump")
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-
 # FPS
 FPS = 60
 
@@ -42,17 +40,17 @@ obstacle_speed = 5
 # Font
 font = pygame.font.SysFont(None, 36)
 
-
 # Define an obstacle class
 class Obstacle(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, player):
         super().__init__()
         self.image = pygame.Surface((OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
         self.image.fill(BLACK)
         self.rect = self.image.get_rect()
         self.rect.x = WIDTH
         self.rect.y = HEIGHT - OBSTACLE_HEIGHT - 10
-
+        self.player = player
+        self.temp = self.player.score
         self.explosion = pygame.image.load(images_dir / "explosion1.gif")
 
     def update(self):
@@ -60,6 +58,13 @@ class Obstacle(pygame.sprite.Sprite):
         # Remove the obstacle if it goes off screen
         if self.rect.right < 0:
             self.kill()
+        obstacle = Obstacle(player)
+        if self.rect.x == player.rect.x:
+            self.player.score += 1
+
+        if self.temp >= 5:
+            self.rect.y = self.player.rect.y
+
 
     def explode(self):
         """Replace the image with an explosition image."""
@@ -94,14 +99,14 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = HEIGHT - PLAYER_SIZE - 10
         self.speed = player_speed
         self.is_jumping = True
-
+        self.score = 0
     def update(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] and not self.is_jumping:
         # Jumping means that the player is going up. The top of the 
         # screen is y=0, and the bottom is y=SCREEN_HEIGHT. So, to go up,
         # we need to have a negative y velocity
-            self.speed = -12
+            self.speed = -13
             self.is_jumping = True 
 
     # Update player position. Gravity is always pulling the player down,
@@ -128,7 +133,8 @@ class Game():
     def __init__(self):
         pygame.init()
         self.scene = 0
-    def add_obstacle(obstacles):
+
+    def add_obstacle(obstacles, player):
         # random.random() returns a random float between 0 and 1, so a value
         # of 0.25 means that there is a 25% chance of adding an obstacle. Since
         # add_obstacle() is called every 100ms, this means that on average, an
@@ -137,7 +143,7 @@ class Game():
         # obstacles, but not too close together. 
         
         if random.random() < 0.4:
-            obstacle = Obstacle()
+            obstacle = Obstacle(player)
             obstacles.add(obstacle)
             return 1
         return 0
@@ -156,7 +162,7 @@ class Game():
 
         obstacle_count = 0
 
-        while not self.scene== 1:
+        while not game_over:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -168,15 +174,14 @@ class Game():
             # Add obstacles and update
             if pygame.time.get_ticks() - last_obstacle_time > 500:
                 last_obstacle_time = pygame.time.get_ticks()
-                obstacle_count += Game.add_obstacle(obstacles)
+                obstacle_count += Game.add_obstacle(obstacles, player)
             
             obstacles.update()
 
             # Check for collisions
             collider = pygame.sprite.spritecollide(player, obstacles, dokill=False)
             if collider:
-                self.scene =  1
-                collider[0].explode()
+                game_over = True
         
             # Draw everything
             screen.fill(WHITE)
@@ -184,14 +189,22 @@ class Game():
             obstacles.draw(screen)
 
             # Display obstacle count
-            obstacle_text = font.render(f"Score: {obstacle_count}", True, BLACK)
-            screen.blit(obstacle_text, (10, 10))
+            score_text = font.render(f"Score: {player.score}", True, BLACK)
+            screen.blit(score_text, (10, 10))
 
             pygame.display.update()
             clock.tick(FPS)
 
     # Game over screen
-    screen.fill(WHITE)
+        while game_over:
+            screen.fill(WHITE)
+            if player.score >= 100:
+                end = font.render(f"OOF U DIED UR SCORE IS: {player.score}, \ndang! that proves jay can beat jonathan in this game! >:)", True, BLACK)
+            else:
+                end = font.render(f"OOF U DIED UR SCORE IS: {player.score}", True, BLACK)
+            screen.blit(end, (50, 30))
+
+            pygame.display.update()
 
 if __name__ == "__main__":
     game = Game()
