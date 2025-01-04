@@ -42,7 +42,7 @@ font = pygame.font.SysFont(None, 36)
 
 # Define an obstacle class
 class Obstacle(pygame.sprite.Sprite):
-    def __init__(self, player):
+    def __init__(self, player, obsta_type):
         super().__init__()
         self.image = pygame.Surface((OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
         self.image.fill(BLACK)
@@ -52,18 +52,32 @@ class Obstacle(pygame.sprite.Sprite):
         self.player = player
         self.temp = self.player.score
         self.explosion = pygame.image.load(images_dir / "explosion1.gif")
+        self.type = obsta_type
+        global obstacle_type
+        obstacle_type = ""
+        if obsta_type == "explode":
+            obstacle_type = "explode"
+        if obsta_type == "trololol":
+            obstacle_type = "trololol"
 
     def update(self):
-        self.rect.x -= obstacle_speed
+        if self.type == "explode":
+            self.rect.x -= 2 * obstacle_speed
+        else:
+            self.rect.x -= obstacle_speed
         # Remove the obstacle if it goes off screen
         if self.rect.right < 0:
             self.kill()
-        obstacle = Obstacle(player)
-        if self.rect.x == player.rect.x:
-            self.player.score += 1
 
-        if self.temp >= 5:
+        if self.rect.x == player.rect.x:
+            if self.type == "explode":
+                self.image = self.explosion
+            self.image = pygame.transform.scale(self.image, (OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
+            self.rect = self.image.get_rect(center=self.rect.center)
+            self.player.score += 1
+        if self.type == "trololol":
             self.rect.y = self.player.rect.y
+
 
 
     def explode(self):
@@ -143,8 +157,16 @@ class Game():
         # obstacles, but not too close together. 
         
         if random.random() < 0.4:
-            obstacle = Obstacle(player)
+            exploding_number = random.randint(1, 10):
+            random_input = random.randint(1, 150)
+            if exploding_number == 1:
+                obstacle = Obstacle(player, "explode")
+            elif random_input == 69:
+                obstacle = Obstacle(player, "trololol")
+            else: 
+                obstacle = Obstacle(player, "normal")
             obstacles.add(obstacle)
+            print(exploding_number)
             return 1
         return 0
 
@@ -202,7 +224,10 @@ class Game():
                 end = font.render(f"OOF U DIED UR SCORE IS: {player.score}, \ndang! that proves jay can beat jonathan in this game! >:)", True, BLACK)
             else:
                 end = font.render(f"OOF U DIED UR SCORE IS: {player.score}", True, BLACK)
-            screen.blit(end, (50, 30))
+            if obstacle_type == "explode":
+                end = font.render(f"BTW THIS IS THE EASIEST TROLL ENEMY XD", True, BLACK)
+            if obstacle_type == "trololol":
+            screen.blit(end, (30, 30))
 
             pygame.display.update()
 
