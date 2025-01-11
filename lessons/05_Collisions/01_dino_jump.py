@@ -17,7 +17,7 @@ images_dir = Path(__file__).parent / "images" if (Path(__file__).parent / "image
 
 # Screen dimensions
 WIDTH, HEIGHT = 600, 300
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)
 pygame.display.set_caption("Dino Jump")
 
 # Colors
@@ -40,9 +40,11 @@ obstacle_speed = 5
 # Font
 font = pygame.font.SysFont(None, 36)
 
-# Define an obstacle class
+# Define an obstacle class print
+print("collin is bad at this game unless he gets a 25 score or higher which he never will")
+print("if jay gets a 25 before collin then collin gets a knee surgery tomorow")
 class Obstacle(pygame.sprite.Sprite):
-    def __init__(self, player, obsta_type):
+    def __init__(self, player):
         super().__init__()
         self.image = pygame.Surface((OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
         self.image.fill(BLACK)
@@ -52,55 +54,55 @@ class Obstacle(pygame.sprite.Sprite):
         self.player = player
         self.temp = self.player.score
         self.explosion = pygame.image.load(images_dir / "explosion1.gif")
-        self.type = obsta_type
-        global obstacle_type
-        obstacle_type = ""
-        if obsta_type == "explode":
-            obstacle_type = "explode"
-        if obsta_type == "trololol":
-            obstacle_type = "trololol"
+        self.type = ""
+        exploding_number = random.randint(1, 10)
 
+        slow_guy = random.randint(1, 10)
+        random_input = random.randint(1, 150)
+        if self.temp >= 20:
+            random_input = random.randint(1, 1)
+        if random_input == 1:
+            self.type = "trololol"
+        elif exploding_number == 3:
+            self.type = "explode"
+        
+        elif slow_guy == 3:
+            self.type = "slow"
+        else: 
+            self.type = "normal"
+        
     def update(self):
         if self.type == "explode":
-            self.rect.x -= 2 * obstacle_speed
+            self.rect.x -= 1.8 * obstacle_speed
+        if self.type == "slow":
+            self.rect.x -= obstacle_speed * 0.8
         else:
             self.rect.x -= obstacle_speed
         # Remove the obstacle if it goes off screen
         if self.rect.right < 0:
             self.kill()
-
-        if self.rect.x == player.rect.x:
-            if self.type == "explode":
+        if self.type == "explode":
                 self.image = self.explosion
-            self.image = pygame.transform.scale(self.image, (OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
-            self.rect = self.image.get_rect(center=self.rect.center)
+                self.image = pygame.transform.scale(self.image, (OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
+                self.rect = self.image.get_rect(center=self.rect.center)
+        if self.rect.x == player.rect.x:
             self.player.score += 1
         if self.type == "trololol":
             self.rect.y = self.player.rect.y
 
-
-
-    def explode(self):
-        """Replace the image with an explosition image."""
+    # def explode(self):
+    #     """Replace the image with an explosition image."""
         
-        # Load the explosion image
-        self.image = self.explosion
-        self.image = pygame.transform.scale(self.image, (OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
-        self.rect = self.image.get_rect(center=self.rect.center)
+    #     # Load the explosion image
+    #     self.image = self.explosion
+    #     self.image = pygame.transform.scale(self.image, (OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
+    #     self.rect = self.image.get_rect(center=self.rect.center)
 
 
 # Define a player class
 
 class  Settings():
-    screen_width: int = 500
-    screen_height: int = 500
-    player_size: int = 10
-    player_x: int = 100 # Initial x position of the player
-    gravity: float = 0.3 # acelleration, the change in velocity per frame
-    jump_velocity: int = 15
-    white: tuple = (255, 255, 255)
-    black: tuple = (0, 0, 0)
-    tick_rate: int = 30 # Frames per second
+    jump_count = 13
 
 settings = Settings()
 class Player(pygame.sprite.Sprite):
@@ -114,14 +116,26 @@ class Player(pygame.sprite.Sprite):
         self.speed = player_speed
         self.is_jumping = True
         self.score = 0
+        self.type = ""
+        self.jump_count = 0
+        
     def update(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE] and not self.is_jumping:
+        if keys[pygame.K_SPACE] and not self.is_jumping == True:
         # Jumping means that the player is going up. The top of the 
         # screen is y=0, and the bottom is y=SCREEN_HEIGHT. So, to go up,
         # we need to have a negative y velocity
-            self.speed = -13
-            self.is_jumping = True 
+            self.speed = -12
+            self.is_jumping = True
+            self.jump_count += 1
+        # if not self.rect.top < 0:
+        #     print("w")
+        #     if keys[pygame.K_SPACE] and not self.jump_count >= 2:
+        #         self.speed = -7
+        #         self.jump_count += 1
+        #         print("w")
+        #         # self.is_jumping = False
+        
 
     # Update player position. Gravity is always pulling the player down,
     # which is the positive y direction, so we add GRAVITY to the y velocity
@@ -133,6 +147,8 @@ class Player(pygame.sprite.Sprite):
         if self.rect.top < 0 :
             self.rect.top = 0
             self.speed = 0
+            self.jump_count = 0
+
         if self.rect.bottom > HEIGHT:
             self.rect.bottom = HEIGHT
             self.speed = 0
@@ -147,8 +163,10 @@ class Game():
     def __init__(self):
         pygame.init()
         self.scene = 0
+        self.obstacle_count = 0
 
-    def add_obstacle(obstacles, player):
+
+    def add_obstacle(self, obstacles, player):
         # random.random() returns a random float between 0 and 1, so a value
         # of 0.25 means that there is a 25% chance of adding an obstacle. Since
         # add_obstacle() is called every 100ms, this means that on average, an
@@ -156,17 +174,9 @@ class Game():
         # The combination of the randomness and the time allows for random
         # obstacles, but not too close together. 
         
-        if random.random() < 0.4:
-            exploding_number = random.randint(1, 10):
-            random_input = random.randint(1, 150)
-            if exploding_number == 1:
-                obstacle = Obstacle(player, "explode")
-            elif random_input == 69:
-                obstacle = Obstacle(player, "trololol")
-            else: 
-                obstacle = Obstacle(player, "normal")
+        if random.random() < 0.5:
+            obstacle = Obstacle(player)
             obstacles.add(obstacle)
-            print(exploding_number)
             return 1
         return 0
 
@@ -181,55 +191,68 @@ class Game():
         obstacles = pygame.sprite.Group()
 
         player = Player()
+        while True:
+            if not game_over:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        quit()
 
-        obstacle_count = 0
+                # Update player
+                player.update()
 
-        while not game_over:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
+                # Add obstacles and update
+                if pygame.time.get_ticks() - last_obstacle_time > 450:
+                    last_obstacle_time = pygame.time.get_ticks()
+                    self.obstacle_count += Game.add_obstacle(self, obstacles, player)
+                
+                obstacles.update()
 
-            # Update player
-            player.update()
-
-            # Add obstacles and update
-            if pygame.time.get_ticks() - last_obstacle_time > 500:
-                last_obstacle_time = pygame.time.get_ticks()
-                obstacle_count += Game.add_obstacle(obstacles, player)
+                # Check for collisions
+                collider = pygame.sprite.spritecollide(player, obstacles, dokill=False)
+                if collider:
+                    # .append(self.obsta_type)
+                    game_over = True
             
-            obstacles.update()
+                # Draw everything
+                screen.fill(WHITE)
+                pygame.draw.rect(screen, BLUE, player)
+                obstacles.draw(screen)
 
-            # Check for collisions
-            collider = pygame.sprite.spritecollide(player, obstacles, dokill=False)
-            if collider:
-                game_over = True
-        
-            # Draw everything
-            screen.fill(WHITE)
-            pygame.draw.rect(screen, BLUE, player)
-            obstacles.draw(screen)
+                # Display obstacle count
+                score_text = font.render(f"Score: {player.score}", True, BLACK)
+                screen.blit(score_text, (10, 10))
 
-            # Display obstacle count
-            score_text = font.render(f"Score: {player.score}", True, BLACK)
-            screen.blit(score_text, (10, 10))
+                pygame.display.update()
+                clock.tick(FPS)
+                obstacle = Obstacle(player)
 
-            pygame.display.update()
-            clock.tick(FPS)
-
-    # Game over screen
-        while game_over:
-            screen.fill(WHITE)
-            if player.score >= 100:
-                end = font.render(f"OOF U DIED UR SCORE IS: {player.score}, \ndang! that proves jay can beat jonathan in this game! >:)", True, BLACK)
+        # Game over screen
             else:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        quit()
+                keys = pygame.key.get_pressed()
+                screen.fill(WHITE)
+                # if obstacle.type == "explode":
+                #     end = font.render(f"LOL U DIED TO THE EASIEST TROLL ENEMY", True, BLACK)
+                # elif obstacle.type == "trololol":
+                #     end = font.render(f"WELP, UR LUCKY U EVEN GOT THE ENEMY XD", True, BLACK)
                 end = font.render(f"OOF U DIED UR SCORE IS: {player.score}", True, BLACK)
-            if obstacle_type == "explode":
-                end = font.render(f"BTW THIS IS THE EASIEST TROLL ENEMY XD", True, BLACK)
-            if obstacle_type == "trololol":
-            screen.blit(end, (30, 30))
+                screen.blit(end,(30, 30))
+                instructions = font.render("press space key to try again", True, BLACK)
+                screen.blit(instructions, (100, 100))
+                if keys[pygame.K_SPACE]:
+                    game_over = False
+                    clock = pygame.time.Clock()
+                    last_obstacle_time = pygame.time.get_ticks()
 
-            pygame.display.update()
+                    # Group for obstacles
+                    obstacles = pygame.sprite.Group()
+
+                    player = Player()
+                pygame.display.update()
 
 if __name__ == "__main__":
     game = Game()
