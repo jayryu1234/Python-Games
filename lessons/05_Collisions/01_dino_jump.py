@@ -59,7 +59,7 @@ class Obstacle(pygame.sprite.Sprite):
 
         slow_guy = random.randint(1, 10)
         random_input = random.randint(1, 150)
-        if self.temp >= 20:
+        if self.temp >= 23:
             random_input = random.randint(1, 1)
         if random_input == 1:
             self.type = "trololol"

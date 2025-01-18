@@ -1,7 +1,8 @@
 import pygame
 from jtlgames.spritesheet import SpriteSheet
 from pathlib import Path
-
+import math
+p1 = pygame.math.Vector2()
 images = Path(__file__).parent / 'images'
 
 

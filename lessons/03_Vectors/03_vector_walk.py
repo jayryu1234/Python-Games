@@ -14,12 +14,12 @@ class Settings:
     PLAYER_COLOR = (0, 0, 255)
     BACKGROUND_COLOR = (255, 255, 255)
     TEXT_COLOR = (0, 0, 0)
-    FPS = 30
+    FPS = 10000000000
     ANGLE_CHANGE = 3
     LENGTH_CHANGE = 5
     INITIAL_LENGTH = 100
     FONT_SIZE = 24
-
+settings = Settings()
 # Initialize screen
 screen = pygame.display.set_mode((Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT))
 pygame.display.set_caption("Player with Direction Vector")
@@ -28,7 +28,7 @@ pygame.display.set_caption("Player with Direction Vector")
 clock = pygame.time.Clock()
 
 # Font for displaying vector information
-font = pygame.font.Font(None, Settings.FONT_SIZE)
+font = pygame.font.Font(None, settings.FONT_SIZE)
 
 # Player class
 class Player:
