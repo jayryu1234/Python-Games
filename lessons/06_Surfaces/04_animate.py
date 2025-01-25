@@ -48,10 +48,11 @@ def main():
 
     # Main game loop
     running = True
-    
-    sprite_rect = frog_sprites[0].get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
-    
-    pygame.math.Vector2(1, 0)
+
+    sprite_rect = frog_sprites[0].get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))   
+    vec = pygame.math.Vector2(0, -1)
+    keys = pygame.key.get_pressed()
+        
     def draw_alligator(alligator, index):
         """Creates a composed image of the alligator sprites.
 
@@ -76,6 +77,7 @@ def main():
         return composed_image
     
     while running:
+        keys = pygame.key.get_pressed()
         screen.fill((0, 0, 139))  # Clear screen with deep blue
 
         # Update animation every few frames
@@ -94,8 +96,22 @@ def main():
         screen.blit(composed_alligator,  sprite_rect.move(0, 100))
 
         screen.blit(log,  sprite_rect.move(0, -100))
-
-
+        # 2 pi k
+                
+        pygame.draw.line(screen, (0, 255, 0), (sprite_rect[0], sprite_rect[1]), pygame.math.Vector2(sprite_rect[0], sprite_rect[1]) + vec)
+        if keys[pygame.K_LEFT]:
+                direction_vector = direction_vector.rotate(-Settings.ANGLE_CHANGE)
+        elif keys[pygame.K_RIGHT]:
+                direction_vector = direction_vector.rotate(Settings.ANGLE_CHANGE)
+                
+        if keys[pygame.K_UP]:
+            direction_vector.scale_to_length(player.direction_vector.length() + Settings.LENGTH_CHANGE)
+        elif keys[pygame.K_DOWN]:
+            direction_vector.scale_to_length(player.direction_vector.length() - Settings.LENGTH_CHANGE)
+        elif keys[pygame.K_SPACE]:
+            move()
+        elif keys[pygame.K_SPACE]:
+            pass
         # Update the display
         pygame.display.flip()
 
