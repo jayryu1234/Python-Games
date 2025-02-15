@@ -5,7 +5,20 @@ import math
 p1 = pygame.math.Vector2()
 images = Path(__file__).parent / 'images'
 
-
+class Settings:
+    """A class to store all settings for the game."""
+    SCREEN_WIDTH = 800
+    SCREEN_HEIGHT = 600
+    PLAYER_SIZE = 20
+    LINE_COLOR = (0, 255, 0)
+    PLAYER_COLOR = (0, 0, 255)
+    BACKGROUND_COLOR = (255, 255, 255)
+    TEXT_COLOR = (0, 0, 0)
+    FPS = 10000000000
+    ANGLE_CHANGE = 3
+    LENGTH_CHANGE = 5
+    INITIAL_LENGTH = 100
+    FONT_SIZE = 24
 def scale_sprites(sprites, scale):
     """Scale a list of sprites by a given factor.
 
@@ -17,10 +30,16 @@ def scale_sprites(sprites, scale):
         list: List of scaled pygame.Surface objects.
     """
     return [pygame.transform.scale(sprite, (sprite.get_width() * scale, sprite.get_height() * scale)) for sprite in sprites]
-
+class Frog(pygame.sprite.Sprite):
+    def _init_(self, sheet: SpriteSheet, screen):
+        self.frog_sprites = scale_sprites(sheet.load_strip(0, 4, colorkey=-1) , 4)
+    
+    def update(self, screen):
+        sprite_rect = self.frog_sprites[0].get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))   
 def main():
     # Initialize Pygame
     pygame.init()
+    direction_vector = pygame.math.Vector2(Settings.INITIAL_LENGTH, 0)
 
     # Set up the display
     screen = pygame.display.set_mode((640, 480))
@@ -33,7 +52,7 @@ def main():
 
 
     # Load a strip sprites
-    frog_sprites = scale_sprites(spritesheet.load_strip(0, 4, colorkey=-1) , 4)
+    
     allig_sprites = scale_sprites(spritesheet.load_strip( (0,4), 7, colorkey=-1), 4)
 
     # Compose an image
@@ -49,8 +68,9 @@ def main():
     # Main game loop
     running = True
 
-    sprite_rect = frog_sprites[0].get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))   
+    
     vec = pygame.math.Vector2(0, -1)
+    
     keys = pygame.key.get_pressed()
         
     def draw_alligator(alligator, index):
@@ -105,11 +125,10 @@ def main():
                 direction_vector = direction_vector.rotate(Settings.ANGLE_CHANGE)
                 
         if keys[pygame.K_UP]:
-            direction_vector.scale_to_length(player.direction_vector.length() + Settings.LENGTH_CHANGE)
+            direction_vector.scale_to_length(direction_vector.length() + Settings.LENGTH_CHANGE)
         elif keys[pygame.K_DOWN]:
-            direction_vector.scale_to_length(player.direction_vector.length() - Settings.LENGTH_CHANGE)
-        elif keys[pygame.K_SPACE]:
-            move()
+            direction_vector.scale_to_length(direction_vector.length() - Settings.LENGTH_CHANGE)
+
         elif keys[pygame.K_SPACE]:
             pass
         # Update the display

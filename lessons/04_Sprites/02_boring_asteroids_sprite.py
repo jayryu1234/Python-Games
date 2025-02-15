@@ -1,6 +1,8 @@
 import pygame
 import math
+from pathlib import Path
 
+assets = Path(__file__).parent / "images"
 
 class Settings:
     """Class to store game configuration."""
@@ -95,8 +97,7 @@ class Spaceship(pygame.sprite.Sprite):
         if keys[pygame.K_SPACE] and self.ready_to_shoot():
             self.fire_projectile()
         
-        if keys[pygame.K_UP]:
-            self.velocity[0] += 1
+       
 
         self.image = pygame.transform.rotate(self.original_image, -self.angle)
 
@@ -214,7 +215,11 @@ class Game:
 
         pygame.quit()
 
+class AlienSpaceship(Spaceship):
 
+    def create_spaceship_image(self):
+        return pygame.image.load(assets/'alien1.gif')
+    
 if __name__ == "__main__":
 
     settings = Settings()
@@ -224,7 +229,7 @@ if __name__ == "__main__":
     spaceship = Spaceship(
         settings, position=(settings.width // 2, settings.height // 2)
     )
-
-    game.add(spaceship)
+    alien = AlienSpaceship(settings, position=(settings.width // 2, settings.height // 2))
+    game.add(alien)
 
     game.run()
