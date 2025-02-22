@@ -32,6 +32,7 @@ def scale_sprites(sprites, scale):
     return [pygame.transform.scale(sprite, (sprite.get_width() * scale, sprite.get_height() * scale)) for sprite in sprites]
 class Frog(pygame.sprite.Sprite):
     def _init_(self, sheet: SpriteSheet, screen):
+
         self.frog_sprites = scale_sprites(sheet.load_strip(0, 4, colorkey=-1) , 4)
     
     def update(self, screen):
@@ -41,15 +42,16 @@ def main():
     pygame.init()
     direction_vector = pygame.math.Vector2(Settings.INITIAL_LENGTH, 0)
 
+
     # Set up the display
     screen = pygame.display.set_mode((640, 480))
     pygame.display.set_caption("Sprite Animation Test")
-
+    all_sprites = pygame.sprite.Group()
+    frog = Frog(spritesheet, screen)
     # Load the sprite sheet
     filename = images / 'spritesheet.png'  # Replace with your actual file path
     cellsize = (16, 16)  # Replace with the size of your sprites
     spritesheet = SpriteSheet(filename, cellsize)
-
 
     # Load a strip sprites
     
