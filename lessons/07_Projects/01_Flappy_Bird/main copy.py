@@ -28,7 +28,7 @@ class Ground(pygame.sprite.Sprite):
     def __init__(self, xpos):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(dd/"assets/sprites/base.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH*3, SCREEN_HEIGHT))
+        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
         self.mask = pygame.mask.from_surface(self.image)
 
@@ -41,8 +41,6 @@ class Ground(pygame.sprite.Sprite):
 
 def is_offscreenprob(sprite):
     return sprite.rect[0] < -(sprite.rect[2])
-
-pygame.init()
 
 class Bird(pygame.sprite.Sprite):
     def __init__(self):
@@ -179,19 +177,19 @@ def main():
     while True:
         clock.tick(15)
 
-        screen.blit(BACKGROUND, (0, 0))
-
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
             if event.type == KEYDOWN:
                 if event.key == K_SPACE or event.key == K_UP:
                     bird.bump()
+                    pygame.mixer.music.load(wing)
+                    pygame.mixer.music.play()
         if is_offscreenprob(ground_group.sprites()[0]):
-            ground_group.remove(ground_group.sprites()[0])
+                ground_group.remove(ground_group.sprites()[0])
 
-            new_ground = Ground(GROUND_WIDTH - 20)
-            ground_group.add(new_ground)
+                ground2 = Ground(GROUND_WIDTH - 20)
+                ground_group.add(ground)
         if is_offscreenprob(pipe_group.sprites()[0]):
                 pipe_group.remove(pipe_group.sprites()[0])
                 pipe_group.remove(pipe_group.sprites()[0])
