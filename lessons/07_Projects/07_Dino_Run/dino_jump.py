@@ -9,6 +9,7 @@ but it does not. It's a work in progress, and you'll have to finish it.
 import pygame
 import random
 from pathlib import Path
+dd = Path(__file__).parent
 import time
 jumpCount = 10
 # Initialize Pygame
@@ -28,7 +29,7 @@ WHITE = (255, 255, 255)
 FPS = 60
 
 # Player attributes
-PLAYER_SIZE = 25
+PLAYER_SIZE = 50
 
 player_speed = 5
 
@@ -41,8 +42,6 @@ obstacle_speed = 5
 font = pygame.font.SysFont(None, 36)
 
 # Define an obstacle class print
-print("collin is bad at this game unless he gets a 25 score or higher which he never will")
-print("if jay gets a 25 before collin then collin gets a knee surgery tomorow")
 class Obstacle(pygame.sprite.Sprite):
     def __init__(self, player):
         super().__init__()
@@ -55,10 +54,10 @@ class Obstacle(pygame.sprite.Sprite):
         self.temp = self.player.score
         self.explosion = pygame.image.load(images_dir / "explosion1.gif")
         self.type = ""
-        exploding_number = random.randint(1, 10)
+        exploding_number = random.randint(1, 2)
 
-        slow_guy = random.randint(1, 10)
-        random_input = random.randint(1, 150)
+        slow_guy = random.randint(1, 20)
+        random_input = random.randint(1, 250)
         if self.temp >= 23:
             random_input = random.randint(1, 1)
         if random_input == 1:
@@ -85,7 +84,7 @@ class Obstacle(pygame.sprite.Sprite):
                 self.image = self.explosion
                 self.image = pygame.transform.scale(self.image, (OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
                 self.rect = self.image.get_rect(center=self.rect.center)
-        if self.rect.x == player.rect.x:
+        if self.rect.x == 50:
             self.player.score += 1
         if self.type == "trololol":
             self.rect.y = self.player.rect.y
@@ -107,27 +106,45 @@ class  Settings():
 settings = Settings()
 class Player(pygame.sprite.Sprite):
     def __init__(self):
-        super().__init__()
-        self.image = pygame.Surface((PLAYER_SIZE, PLAYER_SIZE))
-        self.image.fill(BLUE)
+        pygame.sprite.Sprite.__init__(self)
+        self.last_jump = 0
+        self.images = [pygame.transform.scale(pygame.image.load(dd/"images/dino_2.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE)),
+                       pygame.transform.scale(pygame.image.load(dd/"images/dino_3.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE))]
+        self.jump_image = pygame.transform.scale(pygame.image.load(dd/"images/dino_0.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE))
+        self.jump_count = 0
+        self.jump_counter = 0
+        self.currentimage = 1
+        self.image = self.images[0]
+        self.mask = pygame.mask.from_surface(self.image)
+
         self.rect = self.image.get_rect()
         self.rect.x = 50
-        self.rect.y = HEIGHT - PLAYER_SIZE - 10
+        self.rect.y = HEIGHT - PLAYER_SIZE
         self.speed = player_speed
-        self.is_jumping = True
+        self.is_jumping = False
         self.score = 0
-        self.type = ""
-        self.jump_count = 0
-        
+
+    def rotate(self):
+        self.currentimage = (self.currentimage+1)%2
+        self.image = self.images[self.currentimage]
+
     def update(self):
+        self.currentimage = (self.currentimage+1)%2
+        self.image = self.images[self.currentimage]
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE] and not self.is_jumping == True:
+        if keys[pygame.K_SPACE] and not self.is_jumping and not self.jump_counter >= 2:
         # Jumping means that the player is going up. The top of the 
-        # screen is y=0, and the bottom is y=SCREEN_HEIGHT. So, to go up,
+        # screen is y=0, and the bottom is y=SCREEN_HEIGHT. So, to go up, 
         # we need to have a negative y velocity
-            self.speed = -12
+            self.last_jump = pygame.time.get_ticks()
+            if self.jump_counter == 1:
+                self.speed = -10
+            elif self.jump_counter == 0:
+                self.speed = -12
             self.is_jumping = True
             self.jump_count += 1
+            self.jump_counter += 1
+
         # if not self.rect.top < 0:
         #     print("w")
         #     if keys[pygame.K_SPACE] and not self.jump_count >= 2:
@@ -147,16 +164,16 @@ class Player(pygame.sprite.Sprite):
         if self.rect.top < 0 :
             self.rect.top = 0
             self.speed = 0
-            self.jump_count = 0
-
+        
+        self.is_jumping = (pygame.time.get_ticks() - self.last_jump) < 200
         if self.rect.bottom > HEIGHT:
             self.rect.bottom = HEIGHT
             self.speed = 0
             self.is_jumping = False
+            self.jump_counter = 0
 
 # Create a player object
-player = Player()
-player_group = pygame.sprite.GroupSingle(player)
+
 
 # Add obstacles periodically
 class Game():
@@ -183,14 +200,18 @@ class Game():
 
     # Main game loop
     def game_loop(self):
+        global clock
         clock = pygame.time.Clock()
+
+        player = Player()
+        player_group = pygame.sprite.GroupSingle(player)
+        
         game_over = False
         last_obstacle_time = pygame.time.get_ticks()
 
         # Group for obstacles
         obstacles = pygame.sprite.Group()
-
-        player = Player()
+    
         while True:
             if not game_over:
                 for event in pygame.event.get():
@@ -199,7 +220,7 @@ class Game():
                         quit()
 
                 # Update player
-                player.update()
+                player_group.update()
 
                 # Add obstacles and update
                 if pygame.time.get_ticks() - last_obstacle_time > 450:
@@ -213,10 +234,10 @@ class Game():
                 if collider:
                     # .append(self.obsta_type)
                     game_over = True
-            
+                
                 # Draw everything
                 screen.fill(WHITE)
-                pygame.draw.rect(screen, BLUE, player)
+                player_group.draw(screen)
                 obstacles.draw(screen)
 
                 # Display obstacle count
@@ -225,7 +246,6 @@ class Game():
 
                 pygame.display.update()
                 clock.tick(FPS)
-                obstacle = Obstacle(player)
 
         # Game over screen
             else:
