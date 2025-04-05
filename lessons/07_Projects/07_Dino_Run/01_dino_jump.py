@@ -55,10 +55,10 @@ class Obstacle(pygame.sprite.Sprite):
         self.temp = self.player.score
         self.explosion = pygame.image.load(images_dir / "explosion1.gif")
         self.type = ""
-        exploding_number = random.randint(1, 10)
+        exploding_number = random.randint(1, 2)
 
-        slow_guy = random.randint(1, 10)
-        random_input = random.randint(1, 150)
+        slow_guy = random.randint(1, 20)
+        random_input = random.randint(1, 250)
         if self.temp >= 23:
             random_input = random.randint(1, 1)
         if random_input == 1:
@@ -125,14 +125,18 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE] and not self.is_jumping:
+        if keys[pygame.K_SPACE] and not self.is_jumping and not self.jump_counter >= 2:
         # Jumping means that the player is going up. The top of the 
         # screen is y=0, and the bottom is y=SCREEN_HEIGHT. So, to go up, 
         # we need to have a negative y velocity
             self.last_jump = pygame.time.get_ticks()
-            self.speed = -12
+            if self.jump_counter == 1:
+                self.speed = -10
+            elif self.jump_counter == 0:
+                self.speed = -12
             self.is_jumping = True
             self.jump_count += 1
+            self.jump_counter += 1
 
         # if not self.rect.top < 0:
         #     print("w")
@@ -159,6 +163,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.bottom = HEIGHT
             self.speed = 0
             self.is_jumping = False
+            self.jump_counter = 0
 
 # Create a player object
 player = Player()
