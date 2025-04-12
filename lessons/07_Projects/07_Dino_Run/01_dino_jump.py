@@ -14,7 +14,7 @@ jumpCount = 10
 # Initialize Pygame
 pygame.init()
 images_dir = Path(__file__).parent / "images" if (Path(__file__).parent / "images").exists() else Path(__file__).parent / "assets"
-
+dd = Path(__file__).parent
 # Screen dimensions
 WIDTH, HEIGHT = 600, 300
 screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)
@@ -108,8 +108,19 @@ settings = Settings()
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        
         self.image = pygame.image.load(images_dir / "explosion1.gif")
+        self.last_jump = 0
+        self.images = [pygame.transform.scale(pygame.image.load(dd/"images/dino_2.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE)),
+                       pygame.transform.scale(pygame.image.load(dd/"images/dino_3.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE))]
+        self.jump_image = pygame.transform.scale(pygame.image.load(dd/"images/dino_0.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE))
+        
+        self.jump_count = 0
+        self.jump_counter = 0
+        self.currentimage = 1
+        self.image = self.images[0]
 
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = 50
         self.rect.y = HEIGHT - PLAYER_SIZE - 10
@@ -128,6 +139,7 @@ class Player(pygame.sprite.Sprite):
             self.speed = -12
             self.is_jumping = True
             self.jump_count += 1
+    
         # if not self.rect.top < 0:
         #     print("w")
         #     if keys[pygame.K_SPACE] and not self.jump_count >= 2:

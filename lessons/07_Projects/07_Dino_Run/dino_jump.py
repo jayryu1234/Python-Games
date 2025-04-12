@@ -45,24 +45,24 @@ font = pygame.font.SysFont(None, 36)
 class Obstacle(pygame.sprite.Sprite):
     def __init__(self, player):
         super().__init__()
-        self.image = pygame.Surface((OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
-        self.image.fill(BLACK)
+        self.image = pygame.transform.scale(pygame.image.load(dd/"images/cactus_9.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE))
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = WIDTH
-        self.rect.y = HEIGHT - OBSTACLE_HEIGHT - 10
+        self.rect.y = HEIGHT - PLAYER_SIZE
         self.player = player
         self.temp = self.player.score
         self.explosion = pygame.image.load(images_dir / "explosion1.gif")
         self.type = ""
-        exploding_number = random.randint(1, 2)
+        exploding_number = random.randint(1, 10)
 
-        slow_guy = random.randint(1, 20)
-        random_input = random.randint(1, 250)
-        if self.temp >= 23:
-            random_input = random.randint(1, 1)
+        slow_guy = random.randint(1, 10)
+        random_input = random.randint(1, 100)
+        # if self.temp >= 23:
+        #     random_input = random.randint(1, 1)
         if random_input == 1:
             self.type = "trololol"
-        elif exploding_number == 3:
+        elif exploding_number == 2:
             self.type = "explode"
         
         elif slow_guy == 3:
@@ -111,13 +111,16 @@ class Player(pygame.sprite.Sprite):
         self.images = [pygame.transform.scale(pygame.image.load(dd/"images/dino_2.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE)),
                        pygame.transform.scale(pygame.image.load(dd/"images/dino_3.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE))]
         self.jump_image = pygame.transform.scale(pygame.image.load(dd/"images/dino_0.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE))
+        
         self.jump_count = 0
         self.jump_counter = 0
         self.currentimage = 1
         self.image = self.images[0]
+        self.image = pygame.Surface((PLAYER_SIZE, PLAYER_SIZE))
         self.mask = pygame.mask.from_surface(self.image)
 
         self.rect = self.image.get_rect()
+        self.rect = self.image.get_rect(center=self.rect.center)
         self.rect.x = 50
         self.rect.y = HEIGHT - PLAYER_SIZE
         self.speed = player_speed
@@ -125,22 +128,26 @@ class Player(pygame.sprite.Sprite):
         self.score = 0
 
     def rotate(self):
-        self.currentimage = (self.currentimage+1)%2
-        self.image = self.images[self.currentimage]
+        self.currentimage = (self.currentimage+0.1)%2
+        self.image = self.images[int(self.currentimage//1)]
 
     def update(self):
-        self.currentimage = (self.currentimage+1)%2
-        self.image = self.images[self.currentimage]
+        if not self.is_jumping:
+            self.currentimage = (self.currentimage+0.1)%2
+            self.image = self.images[int(self.currentimage//1)]
+        else:
+            self.image = self.jump_image
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] and not self.is_jumping and not self.jump_counter >= 2:
         # Jumping means that the player is going up. The top of the 
         # screen is y=0, and the bottom is y=SCREEN_HEIGHT. So, to go up, 
         # we need to have a negative y velocity
+
             self.last_jump = pygame.time.get_ticks()
             if self.jump_counter == 1:
-                self.speed = -10
-            elif self.jump_counter == 0:
                 self.speed = -12
+            elif self.jump_counter == 0:
+                self.speed = -13
             self.is_jumping = True
             self.jump_count += 1
             self.jump_counter += 1
@@ -223,7 +230,7 @@ class Game():
                 player_group.update()
 
                 # Add obstacles and update
-                if pygame.time.get_ticks() - last_obstacle_time > 450:
+                if pygame.time.get_ticks() - last_obstacle_time > 600:
                     last_obstacle_time = pygame.time.get_ticks()
                     self.obstacle_count += Game.add_obstacle(self, obstacles, player)
                 
@@ -238,6 +245,7 @@ class Game():
                 # Draw everything
                 screen.fill(WHITE)
                 player_group.draw(screen)
+                # pygame.draw.rect(screen, BLUE, player)
                 obstacles.draw(screen)
 
                 # Display obstacle count
@@ -259,6 +267,7 @@ class Game():
                 #     end = font.render(f"LOL U DIED TO THE EASIEST TROLL ENEMY", True, BLACK)
                 # elif obstacle.type == "trololol":
                 #     end = font.render(f"WELP, UR LUCKY U EVEN GOT THE ENEMY XD", True, BLACK)
+
                 end = font.render(f"OOF U DIED UR SCORE IS: {player.score}", True, BLACK)
                 screen.blit(end,(30, 30))
                 instructions = font.render("press space key to try again", True, BLACK)
@@ -267,11 +276,10 @@ class Game():
                     game_over = False
                     clock = pygame.time.Clock()
                     last_obstacle_time = pygame.time.get_ticks()
-
+                    player.score = 0
                     # Group for obstacles
                     obstacles = pygame.sprite.Group()
 
-                    player = Player()
                 pygame.display.update()
 
 if __name__ == "__main__":

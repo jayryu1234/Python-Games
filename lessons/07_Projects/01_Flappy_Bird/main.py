@@ -147,6 +147,7 @@ def main():
     start = True
 
     while start:
+        
         clock.tick(15)
 
         for event in pygame.event.get():
