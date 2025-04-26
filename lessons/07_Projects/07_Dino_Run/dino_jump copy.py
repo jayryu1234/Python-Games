@@ -45,19 +45,34 @@ font = pygame.font.SysFont(None, 36)
 class Obstacle(pygame.sprite.Sprite):
     def __init__(self, player):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load(dd/"images/cactus_9.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE))
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect()
-        self.rect.x = WIDTH
-        self.rect.y = HEIGHT - PLAYER_SIZE
+               
         self.player = player
         self.temp = self.player.score
+        if self.temp >= 0:
+            self.square = random.randint(1,1)
+        else:
+            self.square = random.randint(1, 100000)
+        if self.square == 1:
+            print('5')
+            self.image = pygame.Surface((random.randint(10, 30), random.randint(20, 60)))
+            self.mask = pygame.mask.from_surface(self.image)
+            self.rect = self.image.get_rect()
+            self.image.fill(BLACK)
+            self.rect.x = WIDTH
+            self.rect.y = (HEIGHT - PLAYER_SIZE - random.randint(0, 50))
+        if not self.square == 1:
+            self.image = pygame.transform.scale(pygame.image.load(dd/"images/cactus_9.png").convert_alpha(), (PLAYER_SIZE-10, PLAYER_SIZE-10))
+            self.mask = pygame.mask.from_surface(self.image)
+            self.rect = self.image.get_rect()
+            self.rect.x = WIDTH
+            self.rect.y = HEIGHT - PLAYER_SIZE +10
+
         self.explosion = pygame.image.load(images_dir / "explosion1.gif")
         self.type = ""
-        exploding_number = random.randint(1, 10)
+        exploding_number = random.randint(1, 75000)
 
-        slow_guy = random.randint(1, 10)
-        random_input = random.randint(1, 100)
+        slow_guy = random.randint(1, 50)
+        random_input = random.randint(1, 3)
         # if self.temp >= 23:
         #     random_input = random.randint(1, 1)
         if random_input == 1:
@@ -72,7 +87,7 @@ class Obstacle(pygame.sprite.Sprite):
         
     def update(self):
         if self.type == "explode":
-            self.rect.x -= 1.8 * obstacle_speed
+            self.rect.x -= 1.3 * obstacle_speed
         if self.type == "slow":
             self.rect.x -= obstacle_speed * 0.8
         else:
@@ -138,16 +153,18 @@ class Player(pygame.sprite.Sprite):
         else:
             self.image = self.jump_image
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE] and not self.is_jumping and not self.jump_counter >= 2:
+        if keys[pygame.K_SPACE] and not self.is_jumping and not self.jump_counter >= 3:
         # Jumping means that the player is going up. The top of the 
         # screen is y=0, and the bottom is y=SCREEN_HEIGHT. So, to go up, 
         # we need to have a negative y velocity
 
             self.last_jump = pygame.time.get_ticks()
             if self.jump_counter == 1:
-                self.speed = -12
+                self.speed = -10
             elif self.jump_counter == 0:
                 self.speed = -13
+            elif self.jump_counter == 2:
+                self.speed = -7
             self.is_jumping = True
             self.jump_count += 1
             self.jump_counter += 1
@@ -231,14 +248,8 @@ class Game():
 
                 # Add obstacles and update
 
-                if random.randint(1, 5) == 3:
-
-                            if pygame.time.get_ticks() - last_obstacle_time > 600:
-
-                                for i in range(2):
-                                    # last_obstacle_time = pygame.time.get_ticks()
-                                    self.obstacle_count += Game.add_obstacle(self, obstacles, player)
-                elif pygame.time.get_ticks() - last_obstacle_time > 800:
+              
+                if pygame.time.get_ticks() - last_obstacle_time > 500:
                         last_obstacle_time = pygame.time.get_ticks()
                         self.obstacle_count += Game.add_obstacle(self, obstacles, player)
                 

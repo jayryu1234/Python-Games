@@ -45,27 +45,42 @@ font = pygame.font.SysFont(None, 36)
 class Obstacle(pygame.sprite.Sprite):
     def __init__(self, player):
         super().__init__()
-               
+        self.pto = random.randint(1, 5)
+        self.pto_height = random.randint(1, 3)
+        self.pto_speed = random.randint(1, 3)
         self.player = player
         self.temp = self.player.score
-        if self.temp >= 15:
-            self.square = random.randint(1,1)
-        else:
-            self.square = random.randint(1, 100000)
-        if self.square == 3:
-            print('5')
-            self.image = pygame.Surface((random.randint(10, 30), random.randint(20, 60)))
-            self.mask = pygame.mask.from_surface(self.image)
-            self.rect = self.image.get_rect()
-            self.image.fill(BLACK)
-            self.rect.x = WIDTH
-            self.rect.y = (HEIGHT - PLAYER_SIZE - random.randint(0, 50))
-        if not self.square == 3:
+        self.cactus_height = random.randint(1, 3)
+        if self.pto == 5 and self.temp >= 10:
+            self.images =[pygame.transform.scale(pygame.image.load(dd/"images/ptero_0.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE)),
+                        pygame.transform.scale(pygame.image.load(dd/"images/ptero_1.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE))]
+            print('PTO' + str(self.pto_height) + str(self.pto_speed))
+        elif self.cactus_height == 1:
+            self.image = pygame.transform.scale(pygame.image.load(dd/"images/cactus_9.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE))
+        elif self.cactus_height == 2:
             self.image = pygame.transform.scale(pygame.image.load(dd/"images/cactus_9.png").convert_alpha(), (PLAYER_SIZE-10, PLAYER_SIZE-10))
-            self.mask = pygame.mask.from_surface(self.image)
-            self.rect = self.image.get_rect()
-            self.rect.x = WIDTH
-            self.rect.y = HEIGHT - PLAYER_SIZE +10
+        elif self.cactus_height == 3:
+            self.image = pygame.transform.scale(pygame.image.load(dd/"images/cactus_9.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE+10))
+        
+        self.currentimage = 1
+        if self.pto == 5 and self.temp >= 10:
+            self.image = self.images[0]
+        
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.x = WIDTH
+        if self.pto_height == 1 and self.pto == 5 and self.temp >= 10:
+            self.rect.y = HEIGHT - PLAYER_SIZE
+        elif self.pto_height == 2 and self.pto == 5 and self.temp >= 10:
+            self.rect.y = HEIGHT - PLAYER_SIZE - 20
+        elif self.pto_height == 3 and self.pto == 5 and self.temp >= 10:
+            self.rect.y = HEIGHT - 2*PLAYER_SIZE
+        elif self.cactus_height == 1:
+            self.rect.y = HEIGHT - PLAYER_SIZE
+        elif self.cactus_height == 2:
+            self.rect.y = HEIGHT - PLAYER_SIZE+10
+        elif self.cactus_height == 3:
+            self.rect.y = HEIGHT - PLAYER_SIZE -10
 
         self.explosion = pygame.image.load(images_dir / "explosion1.gif")
         self.type = ""
@@ -84,8 +99,15 @@ class Obstacle(pygame.sprite.Sprite):
             self.type = "slow"
         else: 
             self.type = "normal"
-        
+
     def update(self):
+        if self.pto == 5 and self.temp >= 10:
+            self.currentimage = (self.currentimage+0.1)%2
+            self.image = self.images[int(self.currentimage//1)]
+        if self.pto_speed == 2 and self.pto == 5 and self.temp >= 10:
+            self.rect.x -= 1.05 * obstacle_speed
+        if self.pto_speed == 3 and self.pto == 5 and self.temp >= 10:
+            self.rect.x -= 0.9 * obstacle_speed
         if self.type == "explode":
             self.rect.x -= 1.3 * obstacle_speed
         if self.type == "slow":
@@ -123,6 +145,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.last_jump = 0
+        
         self.images = [pygame.transform.scale(pygame.image.load(dd/"images/dino_2.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE)),
                        pygame.transform.scale(pygame.image.load(dd/"images/dino_3.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE))]
         self.jump_image = pygame.transform.scale(pygame.image.load(dd/"images/dino_0.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE))
@@ -169,19 +192,6 @@ class Player(pygame.sprite.Sprite):
             self.jump_count += 1
             self.jump_counter += 1
 
-        # if not self.rect.top < 0:
-        #     print("w")
-        #     if keys[pygame.K_SPACE] and not self.jump_count >= 2:
-        #         self.speed = -7
-        #         self.jump_count += 1
-        #         print("w")
-        #         # self.is_jumping = False
-        
-
-    # Update player position. Gravity is always pulling the player down,
-    # which is the positive y direction, so we add GRAVITY to the y velocity
-    # to make the player go up more slowly. Eventually, the player will have
-    # a positive y velocity, and gravity will pull the player down.
         self.speed += 1
         self.rect.y += self.speed
 
@@ -258,8 +268,8 @@ class Game():
                 # Check for collisions
                 collider = pygame.sprite.spritecollide(player, obstacles, dokill=False)
                 if collider:
-                    # .append(self.obsta_type)
-                    game_over = True
+                     # .append(self.obsta_type)
+                     game_over = True
                 
                 # Draw everything
                 screen.fill(WHITE)
