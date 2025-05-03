@@ -216,7 +216,7 @@ def main():
         pygame.display.update()
 
         if pygame.sprite.groupcollide(bird_group, ground_group, False, False, pygame.sprite.collide_mask) or pygame.sprite.groupcollide(bird_group, pipe_group, False, False, pygame.sprite.collide_mask):
-            score = 0
+             
             break
 
             

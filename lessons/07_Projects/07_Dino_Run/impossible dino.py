@@ -45,47 +45,46 @@ font = pygame.font.SysFont(None, 36)
 class Obstacle(pygame.sprite.Sprite):
     def __init__(self, player):
         super().__init__()
-        self.pto = random.randint(1, 5)
+        self.pto = random.randint(1, 10)
         self.pto_height = random.randint(1, 3)
         self.pto_speed = random.randint(1, 3)
         self.player = player
         self.temp = self.player.score
         self.cactus_height = random.randint(1, 3)
-        if self.pto == 5 and self.temp >= 10:
+        if self.pto == 1 and self.temp >= 10:
             self.images =[pygame.transform.scale(pygame.image.load(dd/"images/ptero_0.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE)),
                         pygame.transform.scale(pygame.image.load(dd/"images/ptero_1.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE))]
             print('PTO' + str(self.pto_height) + str(self.pto_speed))
         elif self.cactus_height == 1:
             self.image = pygame.transform.scale(pygame.image.load(dd/"images/cactus_9.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE))
         elif self.cactus_height == 2:
-            self.image = pygame.transform.scale(pygame.image.load(dd/"images/cactus_9.png").convert_alpha(), (PLAYER_SIZE-10, PLAYER_SIZE-10))
+            self.image = pygame.transform.scale(pygame.image.load(dd/"images/cactus_9.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE-10))
         elif self.cactus_height == 3:
-            self.image = pygame.transform.scale(pygame.image.load(dd/"images/cactus_9.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE+10))
+            self.image = pygame.transform.scale(pygame.image.load(dd/"images/cactus_9.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE+5))
         
         self.currentimage = 1
-        if self.pto == 5 and self.temp >= 10:
+        if self.pto == 1 and self.temp >= 10:
             self.image = self.images[0]
         
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = WIDTH
-        if self.pto_height == 1 and self.pto == 5 and self.temp >= 10:
+        if self.pto_height == 1 and self.pto == 1 and self.temp >= 10:
             self.rect.y = HEIGHT - PLAYER_SIZE
-        elif self.pto_height == 2 and self.pto == 5 and self.temp >= 10:
+        elif self.pto_height == 2 and self.pto == 1 and self.temp >= 10:
             self.rect.y = HEIGHT - PLAYER_SIZE - 20
-        elif self.pto_height == 3 and self.pto == 5 and self.temp >= 10:
+        elif self.pto_height == 3 and self.pto == 1 and self.temp >= 10:
             self.rect.y = HEIGHT - 2*PLAYER_SIZE
         elif self.cactus_height == 1:
             self.rect.y = HEIGHT - PLAYER_SIZE
         elif self.cactus_height == 2:
             self.rect.y = HEIGHT - PLAYER_SIZE+10
         elif self.cactus_height == 3:
-            self.rect.y = HEIGHT - PLAYER_SIZE -10
+            self.rect.y = HEIGHT - PLAYER_SIZE -5
 
         self.explosion = pygame.image.load(images_dir / "explosion1.gif")
         self.type = ""
-        exploding_number = random.randint(1, 75000)
-
+        exploding_number = random.randint(1, 50)
         slow_guy = random.randint(1, 50)
         random_input = random.randint(1, 1000)
         # if self.temp >= 23:
@@ -101,12 +100,12 @@ class Obstacle(pygame.sprite.Sprite):
             self.type = "normal"
 
     def update(self):
-        if self.pto == 5 and self.temp >= 10:
+        if self.pto == 1 and self.temp >= 10:
             self.currentimage = (self.currentimage+0.1)%2
             self.image = self.images[int(self.currentimage//1)]
-        if self.pto_speed == 2 and self.pto == 5 and self.temp >= 10:
+        if self.pto_speed == 2 and self.pto == 1 and self.temp >= 10:
             self.rect.x -= 1.05 * obstacle_speed
-        if self.pto_speed == 3 and self.pto == 5 and self.temp >= 10:
+        if self.pto_speed == 3 and self.pto == 1 and self.temp >= 10:
             self.rect.x -= 0.9 * obstacle_speed
         if self.type == "explode":
             self.rect.x -= 1.3 * obstacle_speed
