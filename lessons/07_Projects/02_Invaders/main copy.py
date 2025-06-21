@@ -83,6 +83,7 @@ class Bullet(sprite.Sprite):
     def update(self, keys, *args):
         game.screen.blit(self.image, self.rect)
         self.rect.y += self.speed * self.direction
+        
         if self.rect.y < 15 or self.rect.y > 600:
             self.kill()
 
