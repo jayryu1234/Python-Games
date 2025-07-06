@@ -4,11 +4,12 @@ from pygame.locals import *
 from pygame import sprite
 from pathlib import Path
 invert = False
+plus = 0
 dd = Path(__file__).parent
 screen = pygame.display.set_mode((600, 600))
 BACKGROUND = pygame.image.load(dd / 'images1/space.png')
 BACKGROUND = pygame.transform.scale(BACKGROUND, (600, 600))
-
+column = 1
 enemies = []
 start_time = pygame.time.get_ticks()
 class Player(sprite.Sprite):
@@ -46,31 +47,59 @@ class Bullets(sprite.Sprite):
     def update(self):
         screen.blit(self.image, self.rect)
 
-        self.rect.y -= 10
+        self.rect.y -= 20
         
         if self.rect.y < 15 or self.rect.y > 600:
             self.kill()
 
 class Enemy(sprite.Sprite):
-    def __init__(self, num):
+    def __init__(self, num, column, edge):
         pygame.sprite.Sprite.__init__(self)
+        self.type = edge
         self.image = pygame.image.load(dd/"images1/alien.png")
-        self.num = num
         self.rect = self.image.get_rect()
         self.rect[0] = num
-        self.rect[1] = 100
+        self.rect[1] = column*100
+        self.invert = None
+        self.plus = 0
     def update(self):
-        global invert
-        if self.rect[0] >= 590-self.num:
-            self.rect[1] += 10 
-            invert = True
-        if self.rect[0] <= 10+ self.num:
-            self.rect[1] += 10
-            invert = False
-        if invert == True:
-            self.rect[0] -= 3
-        if invert == False:
-            self.rect[0] += 3
+        if self.type == True:
+            
+            global invert
+            global plus
+            print(plus)
+            if self.rect[0] >= 600:
+                self.rect[1] += 10 
+                invert = True
+                plus = 10
+            if self.rect[0] <= 300:
+                self.rect[1] += 10
+                invert = False
+                plus = 10
+            if invert == True:
+                self.rect[0] -= 3
+                self.rect.y += plus
+
+            if invert == False:
+                self.rect[0] += 3
+                self.rect.y += plus
+        else:
+            if plus == 10:
+                self.plus = 10
+                
+
+            if invert == True:
+                self.rect[0] -= 3
+                self.rect.y += self.plus
+                self.plus = 0
+            if invert == False:
+                self.rect[0] += 3
+                self.rect.y += self.plus
+                self.plus = 0
+class enemies(sprite.group):
+    def __init__(self, columns, rows):
+        sprite.Group.__init__(self)
+        
 
 class Game():
     def __init__(self):
@@ -83,15 +112,25 @@ class Game():
         enemy_group = pygame.sprite.Group()
         bullet_group = pygame.sprite.Group()
         num = 0
+        y = 100
+        column = 1
         player = Player()
         
         sprite_group = pygame.sprite.Group()
 
-        for _ in range(10):
-            new_enemy = Enemy(num = num)
+        for _ in range(31):
 
-            num += 20
+            if num == 15:
+                new_enemy = Enemy(num = num*20, column = column, edge = True)
+                column += 1
+                num = 0
+            
+            else:
+                new_enemy = Enemy(num = num*20, column = column, edge = False)
+
+                num += 1
             enemy_group.add(new_enemy)
+
 
         sprite_group.add(player)
 
@@ -123,10 +162,9 @@ class Game():
             
 
                     
-            player_group = pygame.sprite.Group()
-            player_group.add(player)
             enemy_group.update()
             enemy_group.draw(screen)
+            
             sprite_group.update()
             sprite_group.draw(screen)
             pygame.display.update()
