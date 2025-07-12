@@ -3,6 +3,8 @@ import random
 from pygame.locals import *
 from pygame import sprite
 from pathlib import Path
+pygame.mixer.init()
+
 invert = False
 plus = 0
 dd = Path(__file__).parent
@@ -59,44 +61,29 @@ class Enemy(sprite.Sprite):
         self.image = pygame.image.load(dd/"images1/alien.png")
         self.rect = self.image.get_rect()
         self.rect[0] = num
-        self.rect[1] = column*100
-        self.invert = None
-        self.plus = 0
+        self.num = num
+        self.og_y = 100 + column*20
+        self.rect[1] = self.og_y
+        self.invert = False
+
     def update(self):
-        if self.type == True:
-            
-            global invert
-            global plus
-            print(plus)
-            if self.rect[0] >= 600:
-                self.rect[1] += 10 
-                invert = True
-                plus = 10
-            if self.rect[0] <= 300:
-                self.rect[1] += 10
-                invert = False
-                plus = 10
-            if invert == True:
+        if self.invert == True:
                 self.rect[0] -= 3
-                self.rect.y += plus
 
-            if invert == False:
+        if self.invert == False:
                 self.rect[0] += 3
-                self.rect.y += plus
-        else:
-            if plus == 10:
-                self.plus = 10
-                
+        if self.rect.x == self.num + 300:
+            print("invert")
+            self.invert == True
+            self.rect.y += 10
+        if self.rect.x == self.num:
+            print('invert')
+            self.invert = False
+            self.rect.y += 10
+        
 
-            if invert == True:
-                self.rect[0] -= 3
-                self.rect.y += self.plus
-                self.plus = 0
-            if invert == False:
-                self.rect[0] += 3
-                self.rect.y += self.plus
-                self.plus = 0
-class enemies(sprite.group):
+
+class enemies(sprite.Group):
     def __init__(self, columns, rows):
         sprite.Group.__init__(self)
         
@@ -105,25 +92,25 @@ class Game():
     def __init__(self):
         pass
     def mainloop(self):
+
         last_shot_time = 0
         self.keys = pygame.key.get_pressed()
         clock = pygame.time.Clock()
 
         enemy_group = pygame.sprite.Group()
         bullet_group = pygame.sprite.Group()
-        num = 0
-        y = 100
-        column = 1
+        num = 1
+  
+        column = 0
         player = Player()
         
         sprite_group = pygame.sprite.Group()
 
-        for _ in range(31):
-
-            if num == 15:
+        for _ in range(30):
+            if _ == 14:
                 new_enemy = Enemy(num = num*20, column = column, edge = True)
                 column += 1
-                num = 0
+                num = 1
             
             else:
                 new_enemy = Enemy(num = num*20, column = column, edge = False)
@@ -168,7 +155,7 @@ class Game():
             sprite_group.update()
             sprite_group.draw(screen)
             pygame.display.update()
-            clock.tick(60)
+            clock.tick(20)
 
             if pygame.sprite.groupcollide(bullet_group, enemy_group, True, True, pygame.sprite.collide_mask):
                 pass
