@@ -66,26 +66,18 @@ class Enemy(sprite.Sprite):
         self.rect[1] = self.og_y
         self.invert = False
 
+
     def update(self):
         if self.invert == True:
                 self.rect[0] -= 3
-
         if self.invert == False:
                 self.rect[0] += 3
-        if self.rect.x == self.num + 300:
-            print("invert")
-            self.invert == True
-            self.rect.y += 10
-        if self.rect.x == self.num:
-            print('invert')
-            self.invert = False
-            self.rect.y += 10
-        
-
 
 class enemies(sprite.Group):
     def __init__(self, columns, rows):
         sprite.Group.__init__(self)
+    # def is_column_dead(self, column):
+    #     return not any(self.enemies[row][column] for row in range(self.rows))
         
 
 class Game():
@@ -150,16 +142,42 @@ class Game():
 
                     
             enemy_group.update()
+            enemy_x = [enemy.rect.x for enemy in enemy_group]
+            
+            try:
+                if min(enemy_x) <= 0 or max(enemy_x) >= 600:
+                    for i in range(len(enemy_group)):
+                        print("invert")
+                        enemy_group.sprites()[i].invert = not enemy_group.sprites()[i].invert
+                        enemy_group.sprites()[i].rect.y += 10
+            except ValueError:
+                num = 1
+
+                for _ in range(30):
+                    if _ == 0:
+                        new_enemy = Enemy(num = num*20, column = column, edge = False)
+
+                        num += 1
+                    elif _+1 % 15 == 0:
+                        new_enemy = Enemy(num = num*20, column = column, edge = True)
+                        column += 1
+                        num = 1
+                    
+                    else:
+                        new_enemy = Enemy(num = num*20, column = column, edge = False)
+
+                        num += 1
+                    enemy_group.add(new_enemy)
+
             enemy_group.draw(screen)
             
             sprite_group.update()
             sprite_group.draw(screen)
             pygame.display.update()
-            clock.tick(20)
+            clock.tick(40)
 
-            if pygame.sprite.groupcollide(bullet_group, enemy_group, True, True, pygame.sprite.collide_mask):
-                pass
-            
+            pygame.sprite.groupcollide(bullet_group, enemy_group, True, True, pygame.sprite.collide_mask)
+                  
 if __name__ == "__main__":
     pygame.init()
     game = Game()
