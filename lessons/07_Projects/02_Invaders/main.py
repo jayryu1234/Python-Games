@@ -4,7 +4,7 @@ from pygame.locals import *
 from pygame import sprite
 from pathlib import Path
 pygame.mixer.init()
-
+music = random.randint(1, 2)
 invert = False
 plus = 0
 dd = Path(__file__).parent
@@ -15,9 +15,12 @@ column = 1
 enemies = []
 pygame.mixer.init()
 start_time = pygame.time.get_ticks()
-pygame.mixer.music.load(dd/"sounds/BGM_SpamtonCD_perfectloop.wav")
-pygame.mixer.music.play()
-pygame.mixer
+if music == 1:
+    pygame.mixer.music.load(dd/"sounds/BGM_SpamtonCD_perfectloop.wav")
+if music == 2:
+    pygame.mixer.music.load(dd/"sounds/BGMFB_BLUUDUDE_CHASE_THEME.wav")
+pygame.mixer.music.play(-1)
+
 class Player(sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -161,12 +164,16 @@ class Game():
             except ValueError:
                 num = 1
 
-                for _ in range(30):
+                for _ in range(45):
                     if _ == 0:
                         new_enemy = Enemy(num = num*20, column = column, edge = False)
 
                         num += 1
                     elif _ == 14:
+                        new_enemy = Enemy(num = num*20, column = column, edge = True)
+                        column += 1
+                        num = 1
+                    elif _== 29:
                         new_enemy = Enemy(num = num*20, column = column, edge = True)
                         column += 1
                         num = 1
