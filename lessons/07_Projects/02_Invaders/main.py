@@ -133,7 +133,7 @@ class Game():
 
                         # Check if enough time has passed to fire another shot
                         current_time = pygame.time.get_ticks()
-                        if current_time - last_shot_time >= 300:
+                        if current_time - last_shot_time >= 100:
                             last_shot_time = current_time
                             bullets = Bullets(
                             player.rect.x,
