@@ -30,7 +30,7 @@ class Player(sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.rect.center
         self.rect[0] = 600 /2
-        self.rect[1] = 500
+        self.rect[1] = 480
 
     def update(self):
         keys = pygame.key.get_pressed()
@@ -38,7 +38,7 @@ class Player(sprite.Sprite):
         # Move the square based on arrow keys
         if keys[K_w] and self.rect.y >= 150:
             self.rect.y -= 3
-        if keys[K_s] and self.rect.y <= 600:
+        if keys[K_s] and self.rect.y <= 480:
             self.rect.y += 3
         if keys[K_a] and self.rect.x > 10:
             self.rect.x -= 5
@@ -164,7 +164,7 @@ class Game():
             except ValueError:
                 num = 1
 
-                for _ in range(45):
+                for _ in range(75):
                     if _ == 0:
                         new_enemy = Enemy(num = num*20, column = column, edge = False)
 
@@ -177,7 +177,14 @@ class Game():
                         new_enemy = Enemy(num = num*20, column = column, edge = True)
                         column += 1
                         num = 1
-                    
+                    elif _ == 44:
+                        new_enemy = Enemy(num = num*20, column = column, edge = True)
+                        column += 1
+                        num = 1
+                    elif _ == 59:
+                        new_enemy = Enemy(num = num*20, column = column, edge = True)
+                        column += 1
+                        num = 1
                     else:
                          new_enemy = Enemy(num = num*20, column = column, edge = False)
 
