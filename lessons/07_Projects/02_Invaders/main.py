@@ -7,6 +7,7 @@ pygame.mixer.init()
 music = random.randint(1, 2)
 invert = False
 plus = 0
+forever = False
 dd = Path(__file__).parent
 screen = pygame.display.set_mode((600, 600))
 BACKGROUND = pygame.image.load(dd / 'images1/space.png')
@@ -162,7 +163,7 @@ class Game():
             except ValueError:
                 num = 1
 
-                for _ in range(75):
+                for _ in range(105):
                     if _ == 0:
                         new_enemy = Enemy(num = num*20, column = column, edge = False)
 
@@ -183,6 +184,14 @@ class Game():
                         new_enemy = Enemy(num = num*20, column = column, edge = True)
                         column += 1
                         num = 1
+                    elif _ == 74:
+                        new_enemy = Enemy(num = num*20, column = column, edge = True)
+                        column += 1
+                        num = 1
+                    elif _ == 89:
+                        new_enemy = Enemy(num = num*20, column = column, edge = True)
+                        column += 1
+                        num = 1
                     else:
                          new_enemy = Enemy(num = num*20, column = column, edge = False)
 
@@ -195,8 +204,13 @@ class Game():
             sprite_group.draw(screen)
             pygame.display.update()
             clock.tick(40)
-
-            pygame.sprite.groupcollide(bullet_group, enemy_group, True, True, pygame.sprite.collide_mask)
+            if random.randint(1, 10) == 5:
+                forever = True
+                pygame.sprite.groupcollide(bullet_group, enemy_group, True, False, pygame.sprite.collide_mask)
+            if forever == True:
+                pygame.sprite.groupcollide(bullet_group, enemy_group, True, False, pygame.sprite.collide_mask)
+            else:
+                pygame.sprite.groupcollide(bullet_group, enemy_group, True, True, pygame.sprite.collide_mask)
             pygame.sprite.groupcollide(player_group, enemy_group, True, True, pygame.sprite.collide_mask)
                   
 if __name__ == "__main__":
