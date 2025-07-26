@@ -13,7 +13,11 @@ BACKGROUND = pygame.image.load(dd / 'images1/space.png')
 BACKGROUND = pygame.transform.scale(BACKGROUND, (600, 600))
 column = 1
 enemies = []
+pygame.mixer.init()
 start_time = pygame.time.get_ticks()
+pygame.mixer.music.load(dd/"sounds/BGM_SpamtonCD_perfectloop.wav")
+pygame.mixer.music.play()
+pygame.mixer
 class Player(sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -147,7 +151,6 @@ class Game():
             try:
                 if min(enemy_x) <= 0 or max(enemy_x) >= 600:
                     for i in range(len(enemy_group)):
-                        print("invert")
                         enemy_group.sprites()[i].invert = not enemy_group.sprites()[i].invert
                         enemy_group.sprites()[i].rect.y += 10
             except ValueError:
