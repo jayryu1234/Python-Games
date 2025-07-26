@@ -33,6 +33,10 @@ class Player(sprite.Sprite):
         keys = pygame.key.get_pressed()
 
         # Move the square based on arrow keys
+        if keys[K_w] and self.rect.y >= 150:
+            self.rect.y -= 3
+        if keys[K_s] and self.rect.y <= 600:
+            self.rect.y += 3
         if keys[K_a] and self.rect.x > 10:
             self.rect.x -= 5
         if keys[K_d] and self.rect.x < 570:
@@ -73,9 +77,9 @@ class Enemy(sprite.Sprite):
 
     def update(self):
         if self.invert == True:
-                self.rect[0] -= 3
+                self.rect[0] -= 10
         if self.invert == False:
-                self.rect[0] += 3
+                self.rect[0] += 10
 
 class enemies(sprite.Group):
     def __init__(self, columns, rows):
@@ -99,7 +103,8 @@ class Game():
   
         column = 0
         player = Player()
-        
+        player_group = pygame.sprite.Group()
+        player_group.add(player)
         sprite_group = pygame.sprite.Group()
 
         for _ in range(30):
@@ -161,15 +166,15 @@ class Game():
                         new_enemy = Enemy(num = num*20, column = column, edge = False)
 
                         num += 1
-                    elif _+1 % 15 == 0:
+                    elif _ == 14:
                         new_enemy = Enemy(num = num*20, column = column, edge = True)
                         column += 1
                         num = 1
                     
                     else:
-                        new_enemy = Enemy(num = num*20, column = column, edge = False)
+                         new_enemy = Enemy(num = num*20, column = column, edge = False)
 
-                        num += 1
+                         num += 1
                     enemy_group.add(new_enemy)
 
             enemy_group.draw(screen)
@@ -180,6 +185,7 @@ class Game():
             clock.tick(40)
 
             pygame.sprite.groupcollide(bullet_group, enemy_group, True, True, pygame.sprite.collide_mask)
+            pygame.sprite.groupcollide(player_group, enemy_group, True, True, pygame.sprite.collide_mask)
                   
 if __name__ == "__main__":
     pygame.init()
