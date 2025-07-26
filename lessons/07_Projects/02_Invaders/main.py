@@ -15,10 +15,8 @@ column = 1
 enemies = []
 pygame.mixer.init()
 start_time = pygame.time.get_ticks()
-if music == 1:
-    pygame.mixer.music.load(dd/"sounds/BGM_SpamtonCD_perfectloop.wav")
-if music == 2:
-    pygame.mixer.music.load(dd/"sounds/BGMFB_BLUUDUDE_CHASE_THEME.wav")
+
+pygame.mixer.music.load(dd/"sounds/BGMFB_BLUUDUDE_CHASE_THEME.wav")
 pygame.mixer.music.play(-1)
 
 class Player(sprite.Sprite):
