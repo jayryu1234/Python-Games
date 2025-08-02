@@ -1,0 +1,14 @@
+project/
+├─ main.py
+├─ modules/
+│  ├─ player.py
+│  ├─ meteor.py
+│  ├─ ui.py
+│  └─ audio.py
+└─ assets/
+   ├─ images/
+   │   ├─ player.png
+   │   └─ lemon.png
+   └─ sounds/
+       ├─ bgm.mp3
+       └─ shoot.wav

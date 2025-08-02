@@ -1,0 +1,196 @@
+1. wave system
+    so uhh there's the hard version, but better and ez version and very poorly made.
+    ez way:
+        use pygame.get_ticks() to get ticks and add a timer for each wave. You can make it so like wave 1 takes 120 secs and wave 2 takes 150 secs and so on,
+        and instead of making a list of the possible lemons that can appear and in what order and stuff, just make it random so that if ur lucky, the game becomes really ez.
+    hard way:
+        so uhh ...
+        make a list called wave_list or something and add variables that explain what kind/type of lemonoid will spawn, and a lemon_spawn_rate list
+        or something so you the spawn rate of lemons arent just fixed and stuff
+        (you can make one list and make the values a tuple)
+        and then fix the lemons so there will be a type from the list, (complex)
+        and then uhh change the spawn rate so that it will match the values in the list.
+
+        when u kill all of the lemons, you complete the wave and you move on to the next wave.
+
+    things that both systems must have:
+        every wave must have something that shows what wave it is when it ends
+        different waves have different lemons, and will get harder.
+        If we have time, we can add ipgrades for any way.
+        this list will be larger if I'm not lazy like I am right now
+        
+2. music!!!
+    i have a lottttttttttttttttttttttttttttttttttt more bg music i have and they're prettttttttttttttyyyyyyyyyy good (I SHALL FIND MORE AHAHAHAH) >:)
+
+3. different lemon types
+    
+    Strong lemon:
+        uhh strong lemon is stronger than normal lemons, and thats literally it.
+        designs?
+            stripes?
+            bigger?
+            definitely more hp
+        (when have more time)
+            you can add different levels of types of lemons, like strong lemon 1, strong lemon 2 etc. i wont put this message on all of the lemon types
+            because ofc it will get boring to write the same thing over and over and over again and whatever
+    Healer lemon:
+        when it dies it uhh heals the lemons around it (when have more time) you can make it so that if the lemon has max health
+        it gets more max hp caps at 1.5* current hp
+        designs:
+            uhh plus in the middle?
+            and uhh idk
+        (make sure u dont put too much healer lemons or else they get too op and can easily overpower the player)
+        (but wait a minute that will be a really good idea >:) (ALL HEALER LEVEL 2s ahahahaha) )
+    Speedy lemon:
+        lemon but speeeeeeeedddddddddyyyyyyyyyyy!!!!
+        designs:
+            uhh ...
+            red lemon?
+    (i have more ideas but the different lemon types are getting to long)
+    (for more time or at home (these lemons are hardddddddddd))
+    (also for linker lemon I ALREADY KNOW that this is wayyyyyyyyyyyyyyy to hard to make in 2 weeks im justtttttttttttt noting this for fun :) )
+    Linker lemon:
+        very very very very very overpowered
+        only appears like 1 or 2 every wave starts at wave 10
+        when a link lemon spawns, the screen will turn black and white (idk how to do u do it) and only linker lemon will be colored
+        all of the other lemons will appear but they can't damage u
+        when the link hits another lemon, it will link together (like a red line to show) and the linked lemon will become colored again
+        and it can damge you.
+        you cant kill the linker lemon unless the other linked lemon is killed, and also u cant damage the linked lemon at all unless it is linked to
+        at least 3 other lemons. the maxed link count for the linked lemon is 5 lemons, but it is really hard since the other lemons cant be damaged,
+        you have to kill the linked lemons, and wait for it to hit 3 other lemons, and keep doing that until all of the lemons on the wave are gone.
+        when all of the lemons in the wave is gone, THEN you can damage the linker lemon
+        (op combos with linker)
+            linker + healer 3 (literally like bro this is impossible)
+            linker + linker (:\)
+            linker + 3 tanks or somth (like turrets with more hp and u can barely attack)
+        also the other lemon when linked gets *1.3 hp just for fun >:)
+        when the linker lemon or other linked lemon hits u:
+            U HAVE TO BE SOOOOOOOOOOOOOOO CAREFUL TO NOT GET HIT BY ANY OF THE lemons
+            or else ur cooked
+            anyway
+                when you get hit, you will get linked to the lemon you got hit by and everytime you damage it it also damages you.
+                a way to take care of this is to kill the other lemon that is linked to the linked lemon is linked to you, because when the lemon
+                that is linked by the player is linked to the lemon that is getting damaged, it wont kill you when u kill the lemon.
+                when all of the lemon are linked to you, you have to drink like a potion or somth
+                wait... when you get linked to all of the lemon, you can attack the linker lemon and when it dies it will damage you like 1/3 hp.
+                but note that you will also get damaged for running into the other lemons so if ur not the type to sacrifice ur life it is very bad
+        designs:
+            uhh lemon with a heart that is red >:) (im bored of making good lemon designs)
+    Tank lemon:
+        like strong lemon but can shoot bullets at the player. thats literally it as well.
+        (also has a little bit less hp than a strong lemon)
+        designs:
+            have a lemon turret in a middle, shoots bullets that look like sliced lemons.
+    LIMIT BREAKER:
+        (this is uhhhh prettttttttttttttyyyyyyyyyy hard to explain so uhh "figure it out urself!"!!! uhh ill tell u if u ask me >:))
+
+4. Upgrades!
+    1. upgrade ideas:
+        pass (will do later)
+    2. upgrade rarities:
+        pass (i literally ran out of time what do u expect, do it all in like 1 second?)
+
+Boss improvements:
+    Not boss pattern:
+
+        make like a cutscene, (i really want a cutscene) like introducing the boss
+
+
+        there should be a "king lemon" banner thingy below the health bar.
+
+        I would like it better if it likes moves up and down a little to make it look like its floating
+
+        it should kill / go to the prince+bodyguard phase not just continue mashing
+
+        the player should spawn below the boss not in
+
+    boss pattern issues:
+        MUST NEED:
+        |some sort of indication for every attack (goes red or somth when its going to 돌진ing, or like  exclamation marks near border to show that hes going to summon troops) also indication for when hes vulnerable and not.|
+
+        |im thinking of another attack pattern for phase 2,
+        where he spawns lemons in like a circle that you cant break and theres a gap that the player has to go between. like the lemons spawn from the edges and go closer toward the middle in like a circle and theres a small hole that the player has to go through. (you cant break the lemons and he also repeats this 3 times)|
+
+        throwing speedy lemons wayyy to fast make it throw slower
+
+        spawn + spawn glitch:
+
+        it only checks if the first layer is broken, and not if the 2nd/3rd/4th layer is broken, so it can continue spawning infinitely ig and make the boss way too hard
+
+        for me its too ez for you its too hard -_-
+        you can change the difficulty if u want ig
+
+ideas for planet lemon:
+
+    Planet Lemon is a planet lemon with multiple planets, of course, with different abilities and stuff.
+
+    phase 1:
+
+        he goes around trying to run into you and there are 2 planets orbiting around him. you can shoot him in this part,
+        but if you hit the asteroids that are orbiting around him it cancels the damage.
+
+        he can also spawn a laser of lemons that spins around to hit you. (in a line)
+        he is also invincible during the laser of lemons but is stunned for 5 seconds after he does lasers
+
+    phase 2:
+        same attacks but harder
+        run into you speed gets stronger 2 planets turn to 3 planets
+
+        laser of lemons went to dividing the screen into 1/2 turns to 1/3
+    
+    phase 3:
+        he starts to throw asteroids/lemons at you, like meteors, and it shows like a red circle of where it is going to spawn.
+
+        he is invincible during this part, but some lemons will be stuck on the ground and you can hit it a few times to hit the
+
+        asteroids back to him and make him stunned for 3 seconds. (the asteroid also does damage)
+
+        lasers turn to 4
+        when he is running into you he is now faster than the player and has 3 planets orbiting around him.
+        he is no longer stunned after lasers, but the throwing asteroid and running into you is now more common.
+    
+    (more extra ideas)
+
+    when he dies, he disperses 2 extra lemon asteroids that will be kind of like mini bosses.
+
+    Asteroid A:
+        2 attacks:
+
+        tries to run into you but like king lemon style and goes back
+
+        gets a literal rpg and shoots a homing lemon at you you have to redirect it into him to make him stunned.
+
+        only has like 1000 hp so it should be pretty quick
+    
+    Glitched Lemon:
+
+        has 2 phases
+
+            phase 1:
+
+                tries to run into you planet lemon style and really fast but deals little damage (0.5 hp for instance)
+
+                He starts teleporting around the screen and randomly shoots out a speedy lemon toward you and repeats 2 times
+                after teleporting he glitches and gets stunned for 5 seconds. he returns to his original position later.
+
+                phase 1 400 hp
+            
+            phase 2:
+
+                tries to run into you is same
+
+                can summon glitched lemons that instead of moving, telports somehwere in the screen every 2 seconds
+                has a lot of hp and doesnt split
+
+                he then spawns a bunch of random rectangles glitching your screen and does one more attack before getting stunned
+
+                teleporting around the screen is now gone
+
+                phase 2 600 hp
+                
+
+
+
+
+
