@@ -4,7 +4,7 @@ import modules.audio as sfx
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, pos, angle):
         super().__init__()
-        self.original = pygame.image.load("assets/images/laser.png")
+        self.original = pygame.image.load("lemonoids/assets/images/laser.png")
         self.original = pygame.transform.scale(self.original, (10, 40))
         self.image = pygame.transform.rotate(self.original, angle)
         self.mask = pygame.mask.from_surface(self.image)

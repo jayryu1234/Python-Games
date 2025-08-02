@@ -18,7 +18,7 @@ class SpecialLemon(pygame.sprite.Sprite):
         super().__init__()
         self.size = size
         self.image = pygame.transform.scale(
-            pygame.image.load("assets/images/" + img),
+            pygame.image.load("lemonoids/assets/images/" + img),
             (size * 60, size * 40)
         )
         self.rect = self.image.get_rect(center=pos)
@@ -78,7 +78,7 @@ class KingLemon(pygame.sprite.Sprite):
         super().__init__()
         # 이미지 & 폰트
         self.base_image = pygame.transform.scale(
-            pygame.image.load("assets/images/king_Lemon.png").convert_alpha(),
+            pygame.image.load("lemonoids/assets/images/king_Lemon.png").convert_alpha(),
             (273, 234)
         )
         self.image = self.base_image.copy()

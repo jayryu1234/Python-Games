@@ -3,10 +3,10 @@ from modules.wavemanager import WaveManager
 from modules.cutscenes import BossIntroCutscene, BOSS_INTRO_END
 from modules.special_lemon import KingLemon
 def load_level_data():
-    with open('assets/levels.json', 'r') as f:
+    with open('lemonoids/assets/levels.json', 'r') as f:
         return json.load(f)
 def save_level_data(data):
-    with open('assets/levels.json', 'w') as f:
+    with open('lemonoids/assets/levels.json', 'w') as f:
         json.dump(data, f)
 
 class GameState:

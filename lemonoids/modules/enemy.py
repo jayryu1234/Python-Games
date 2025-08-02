@@ -5,7 +5,7 @@ class Lemon(pygame.sprite.Sprite):
         super().__init__()
         self.size = size
         self.image = pygame.transform.scale(
-            pygame.image.load("assets/images/"+img),
+            pygame.image.load("lemonoids/assets/images/"+img),
             (size*70, size*50)
         )
         self.rect = self.image.get_rect(center = pos)
@@ -30,7 +30,7 @@ class Lemon(pygame.sprite.Sprite):
         super().__init__()
         self.size = size
         self.image = pygame.transform.scale(
-            pygame.image.load("assets/images/"+img),
+            pygame.image.load("lemonoids/assets/images/"+img),
             (size*imgscaleX, size*imgscaleY)
         )
         self.rect = self.image.get_rect(center = pos)

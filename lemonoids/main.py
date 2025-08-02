@@ -1,5 +1,4 @@
-import pygame, random
-from pathlib import Path
+import pygame, random, modulefinder
 from modules.player import Player
 from modules.levelselect import LevelSelect
 from modules.special_lemon import BOSS_CLEARED
@@ -13,7 +12,7 @@ screen = pygame.display.set_mode((800, 600),pygame.SCALED|pygame.RESIZABLE)
 clock = pygame.time.Clock()
 data = {}
 #wave_manager = WaveManager()
-dd = Path(__file__).parent
+
 # Sprite groups
 meteors = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
@@ -53,16 +52,19 @@ while running:
                     game.wave_manager.current_wave = 1
             elif game and game.cutscene_active and event.type == BOSS_INTRO_END and not event.type == BOSS_CLEARED:
                 game.wave_manager.start_time = pygame.time.get_ticks()
-                bgm = random.randint(1, 4)
-                if bgm == 1:
-                    sfx.play_bgm("CHECKER")
+                bgm = random.randint(1, 7)
+                if bgm == 1 or bgm == 5 or bgm == 6 or bgm == 7:
+                    sfx.play_bgm('COLOR')
+                    print('"i havent found the color of lemons yet"')
                 elif bgm == 2:
                     sfx.play_bgm("SPAMTON")
+                    print('"NOWS UR CHANCE TO BE A BIG SHOT')
                 elif bgm == 3:
-                    print("hope")
                     sfx.play_bgm("HOPES AND DREAMS")
+                    print("weehee heee")
                 elif bgm == 4:
                     sfx.play_bgm("BLUUDUDE")
+                    print("TEAM BLUUDUDE GET IN NOW")
                 game_state = 'PLAY'
 
         elif game_state == 'TITLE':
@@ -80,13 +82,13 @@ while running:
     if game_state == 'TITLE':
 
         screen.fill((0,0,0))
-        title_img = pygame.image.load('assets/images/lemonoids_title.png').convert_alpha()
+        title_img = pygame.image.load('lemonoids/assets/images/lemonoids_title.png').convert_alpha()
         title_rect = title_img.get_rect(center = (400,200))
         screen.blit(title_img,title_rect)
 
-        play_img = pygame.image.load('assets/images/play_button.png').convert_alpha()
+        play_img = pygame.image.load('lemonoids/assets/images/play_button.png').convert_alpha()
         play_img = pygame.transform.scale(
-        pygame.image.load("assets/images/play_button.png"),
+        pygame.image.load("lemonoids/assets/images/play_button.png"),
         (450, 200)
     )
         play_rect = play_img.get_rect(center = (400,400))

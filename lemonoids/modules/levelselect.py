@@ -4,7 +4,7 @@ class LevelSelect:
     def __init__(self, screen):
         self.screen = screen
         # 레벨 데이터 로드
-        with open('assets/levels.json', 'r') as f:
+        with open('lemonoids/assets/levels.json', 'r') as f:
             self.data = json.load(f)
         # 버튼 영역 정의
         self.buttons = {}

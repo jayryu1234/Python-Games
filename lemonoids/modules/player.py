@@ -5,7 +5,7 @@ import modules.ui as ui
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, bullet_group):
         super().__init__()
-        self.original = pygame.image.load("assets/images/player.png")
+        self.original = pygame.image.load("lemonoids/assets/images/player.png")
         self.original = pygame.transform.scale(self.original, (60, 45))
         self.image = self.original
         self.mask = pygame.mask.from_surface(self.image)
