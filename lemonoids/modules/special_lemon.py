@@ -95,7 +95,7 @@ class KingLemon(pygame.sprite.Sprite):
         self.float_timer = pygame.time.get_ticks()
 
         # 체력 & 페이즈
-        self.max_health = 100
+        self.max_health = 5000
         self.health = self.max_health
         self.phase = 1
 
@@ -137,6 +137,11 @@ class KingLemon(pygame.sprite.Sprite):
             self.phase = 3
 
         # 떠다니기 모션
+
+        match self.state:
+            case 0:
+                print("brubh")
+
         if self.state not in ["charging", "charging_wait","charging_ready"]:
             dt = (now - self.float_timer) / 1000.0
             offset = math.sin(dt * math.pi * 2) * 10

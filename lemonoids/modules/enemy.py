@@ -67,14 +67,14 @@ class Lemon(pygame.sprite.Sprite):
         return fragments
 class StrongLemon(Lemon):
     def __init__(self, pos, _size = 4):
-        super().__init__(pos, size=_size, img = "strong_lemon.png")
+        super().__init__(pos, size=_size, img = "Strong_Lemon.png", imgscaleX=70, imgscaleY= 50)
         self.max_health = self.size*20
         self.health = self.max_health
         self.mask = pygame.mask.from_surface(self.image)
 
 class StrongerLemon(Lemon):
     def __init__(self, pos, _size = 5):
-        super().__init__(pos, size=_size, img = "strong_lemon_2.png")
+        super().__init__(pos, size=_size, img = "Strong_Lemon_2.png", imgscaleX=70, imgscaleY= 50)
         self.max_health = self.size*25
         self.health = self.max_health
         self.mask = pygame.mask.from_surface(self.image)

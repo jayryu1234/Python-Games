@@ -41,6 +41,9 @@ class Player(sprite.Sprite):
             self.rect.y += 3
         if keys[K_a] and self.rect.x > 10:
             self.rect.x -= 5
+        if keys[K_a] and self.rect.x <= 10:
+            self.kill()
+            
         if keys[K_d] and self.rect.x < 570:
             self.rect.x += 5
 
@@ -78,6 +81,7 @@ class Enemy(sprite.Sprite):
 
 
     def update(self):
+
         if self.invert == True:
                 self.rect[0] -= 10
         if self.invert == False:
@@ -163,32 +167,12 @@ class Game():
             except ValueError:
                 num = 1
 
-                for _ in range(105):
+                for _ in range(30):
                     if _ == 0:
                         new_enemy = Enemy(num = num*20, column = column, edge = False)
 
                         num += 1
                     elif _ == 14:
-                        new_enemy = Enemy(num = num*20, column = column, edge = True)
-                        column += 1
-                        num = 1
-                    elif _== 29:
-                        new_enemy = Enemy(num = num*20, column = column, edge = True)
-                        column += 1
-                        num = 1
-                    elif _ == 44:
-                        new_enemy = Enemy(num = num*20, column = column, edge = True)
-                        column += 1
-                        num = 1
-                    elif _ == 59:
-                        new_enemy = Enemy(num = num*20, column = column, edge = True)
-                        column += 1
-                        num = 1
-                    elif _ == 74:
-                        new_enemy = Enemy(num = num*20, column = column, edge = True)
-                        column += 1
-                        num = 1
-                    elif _ == 89:
                         new_enemy = Enemy(num = num*20, column = column, edge = True)
                         column += 1
                         num = 1
@@ -204,13 +188,8 @@ class Game():
             sprite_group.draw(screen)
             pygame.display.update()
             clock.tick(40)
-            if random.randint(1, 10) == 5:
-                forever = True
-                pygame.sprite.groupcollide(bullet_group, enemy_group, True, False, pygame.sprite.collide_mask)
-            if forever == True:
-                pygame.sprite.groupcollide(bullet_group, enemy_group, True, False, pygame.sprite.collide_mask)
-            else:
-                pygame.sprite.groupcollide(bullet_group, enemy_group, True, True, pygame.sprite.collide_mask)
+            
+            pygame.sprite.groupcollide(bullet_group, enemy_group, True, True, pygame.sprite.collide_mask)
             pygame.sprite.groupcollide(player_group, enemy_group, True, True, pygame.sprite.collide_mask)
                   
 if __name__ == "__main__":
