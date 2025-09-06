@@ -36,7 +36,7 @@ class Player(sprite.Sprite):
 
         # Move the square based on arrow keys
         if keys[K_w] and self.rect.y >= 150:
-            self.rect.y -= 3
+           self.rect.y -= 3
         if keys[K_s] and self.rect.y <= 480:
             self.rect.y += 3
         if keys[K_a] and self.rect.x > 10:
