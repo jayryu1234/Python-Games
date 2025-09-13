@@ -3,18 +3,12 @@ import random
 from pygame.locals import *
 from pygame import sprite
 from pathlib import Path
-pygame.mixer.init()
-music = random.randint(1, 2)
-invert = False
-plus = 0
-forever = False
 dd = Path(__file__).parent
 screen = pygame.display.set_mode((600, 600))
 BACKGROUND = pygame.image.load(dd / 'images/frogger_road_bg.png')
 BACKGROUND = pygame.transform.scale(BACKGROUND, (600, 600))
-start_time = pygame.time.get_ticks()
 
-class Frog(pygame.sprite.Sprite):
+class Frog(sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(dd/"images/frog.png").convert_alpha()
@@ -22,24 +16,21 @@ class Frog(pygame.sprite.Sprite):
         #self.mask = pygame.mask.from_surface(self.image)
 
         self.rect = self.image.get_rect()
+        self.rect.x = 250
+        self.rect.y = 505
         self.rect.center = self.rect.center
-    def update(self):
-        self.keys = pygame.key.get_pressed()
-      
-        #print('update')
-        # Move the square based on arrow keys
-        if self.keys[K_w]:
-            print('andrew is the worst teacher yayayayay')
-            self.rect.y -= 30
-        if self.keys[K_s]:
-            self.rect.y += 30
-            print('andrew is the worst teacher yayayayay')
-        if self.keys[K_a]:
-            self.rect.x -= 30
-            print('andrew is the worst teacher yayayayay')
-        if self.keys[K_d]:
-            self.rect.x += 30
-            print('andrew is the worst teacher yayayayay')
+    def update(self, num):
+        if num == 1:
+            self.rect.y -= 75
+        if num == 2:
+            self.rect.y += 75
+        if num == 3:
+            self.rect.x -= 75
+        if num == 4:
+            self.rect.x += 75
+        if num == 5:
+            pass
+        
 
 class Game():
     def __init__(self):
@@ -55,14 +46,38 @@ class Game():
         player_group.add(player)
         sprite_group = pygame.sprite.Group()
         sprite_group.add(player)
+        ismovin = False
+        running = True
+        while running:
+            if player.rect.y <= -75:
+                font = pygame.font.SysFont("Arial", 30)
+                text_surface = font.render("wowieee u won :D", True, (255, 255, 255))
+                screen.blit(text_surface, (100, 100))
+                pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_w and not ismovin:
+                        player_group.update(1)
+                        ismovin = True
+                    elif event.key == pygame.K_s and not ismovin:
+                        player_group.update(2)
+                        ismovin = True
+                    elif event.key == pygame.K_a and not ismovin:
+                        player_group.update(3)
+                        ismovin = True
+                    elif event.key == pygame.K_d and not ismovin:
+                        player_group.update(4)
+                        ismovin= True
 
-        while True:
-            self.keys = pygame.key.get_pressed()
+                    ismovin = False
+                    print('andrew is the worst teacher yayayayay')
             screen.blit(BACKGROUND, (0, 0))
 
             enemy_group.draw(screen)
             
-            sprite_group.update()
+            sprite_group.update(5)
             sprite_group.draw(screen)
             pygame.display.update()
             clock.tick(40)
