@@ -115,6 +115,7 @@ class Player(pygame.sprite.Sprite):
                        pygame.transform.scale(pygame.image.load(dd/"images/dino_3.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE))]
         self.jump_image = pygame.transform.scale(pygame.image.load(dd/"images/dino_0.png").convert_alpha(), (PLAYER_SIZE, PLAYER_SIZE))
         
+        
         self.jump_count = 0
         self.jump_counter = 0
         self.currentimage = 1
