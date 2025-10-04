@@ -104,7 +104,7 @@ class Game():
         ismovin = False
         running = True
         bad_boi = False
-        level = 6
+        level = 7
         good_boi = True
         game_complete = False
         game_over = False
@@ -125,7 +125,8 @@ class Game():
                                 last_obstacle_time = pygame.time.get_ticks()
                                 self.obstacle_count += Game.add_obstacle(self, obstacles)
                         else:
-                            self.obstacle_count += Game.add_obstacle(self, obstacles)
+                            for i in range(10):
+                                self.obstacle_count += Game.add_obstacle(self, obstacles)
                         
                     elif pygame.time.get_ticks() - last_obstacle_time > 350:
                         last_obstacle_time = pygame.time.get_ticks()
