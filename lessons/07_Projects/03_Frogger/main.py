@@ -64,6 +64,8 @@ class Car(sprite.Sprite):
                 self.kill()
             self.rect.x -= 5
 class Game():
+    def lvl_up(self):
+        pass
     def __init__(self):
         pygame.init()
         self.obstacle_count = 0
@@ -87,6 +89,7 @@ class Game():
             return 1
     
     def mainloop(self):
+        random_var1 = False
         front = False
         last_obstacle_time = pygame.time.get_ticks()
         self.keys = pygame.key.get_pressed()
@@ -100,23 +103,49 @@ class Game():
         sprite_group.add(player)
         ismovin = False
         running = True
+        bad_boi = False
+        level = 6
+        good_boi = True
+        game_complete = False
         game_over = False
         hepressed = False
         while running:
-            while not game_over:
-                if pygame.time.get_ticks() - last_obstacle_time > 200:
+            while not game_over and not game_complete:
+                if level >= 5:
+                    if level == 6:
+                        
+                        if pygame.time.get_ticks() - last_obstacle_time > 1000:
+
+                            for i in range(4):
+                                    self.obstacle_count += Game.add_obstacle(self, obstacles)
+                                    last_obstacle_time = pygame.time.get_ticks()
+                    elif level == 7:
+                        if good_boi == True:
+                            if pygame.time.get_ticks() - last_obstacle_time > 1200:
+                                last_obstacle_time = pygame.time.get_ticks()
+                                self.obstacle_count += Game.add_obstacle(self, obstacles)
+                        else:
+                            self.obstacle_count += Game.add_obstacle(self, obstacles)
+                        
+                    elif pygame.time.get_ticks() - last_obstacle_time > 350:
+                        last_obstacle_time = pygame.time.get_ticks()
+                        self.obstacle_count += Game.add_obstacle(self, obstacles)
+                elif pygame.time.get_ticks() - last_obstacle_time > 400 - level*20:
                             last_obstacle_time = pygame.time.get_ticks()
                             self.obstacle_count += Game.add_obstacle(self, obstacles)
                 
                 obstacles.update()
                 if player.rect.y >= 520 and front == True:
-                    font = pygame.font.SysFont("Arial", 30)
-                    text_surface = font.render("bababa u win", True, (255, 255, 255))
-                    screen.blit(text_surface, (100, 100))
+                    game_complete = True
                     pygame.display.update()
                 if player.rect.y <= -75:
                     font = pygame.font.SysFont("Arial", 30)
-                    text_surface = font.render("go backk", True, (255, 255, 255))
+                    if level == 7 and not pygame.time.get_ticks() < 10000:
+                        text_surface = font.render("bad boiii", True, (255, 255, 255))
+                        good_boi = False
+                    else:
+                        text_surface = font.render("go backk", True, (255, 255, 255))
+                    
                     front = True
                     screen.blit(text_surface, (100, 100))
                     pygame.display.update()
@@ -146,10 +175,43 @@ class Game():
                             hepressed = True
 
                         ismovin = False
+                font = pygame.font.SysFont("Arial", 30)
+                if level == 1:
+                    prompt = "mild"
+                if level == 2:
+                    prompt = "okay"
+                if level == 3:
+                    prompt = "a bit dangerous"
+                if level == 4:
+                    prompt = "SCARY :0"
+                if level == 5:
+                    prompt = "aw hell naw"
+                if level == 6:
+                    prompt = "???"
+                # if level == 7:
+                #     prompt = "new york style 💀"
+                if level == 7:
+                    prompt = 'huh'
+                if bad_boi == True:
+                    prompt = 'BAD BOI'
+                car_cd = font.render(f"cars trafficking level: {prompt}", True, (255, 255, 255))
+                if level == 6:
+                    prompt2 = "???"
+                if level == 7:
+                    if not bad_boi == True:
+                        prompt2 = "this ez level for break time"
+                    else:
+                        prompt2 = "GRR GRR PATAPIM"
+                    
+                else:
+                    prompt2 = level
+                level_text = font.render(f'Level: {prompt2}', True, (255, 255, 255))
+
                 screen.blit(BACKGROUND, (0, 0))
+                screen.blit(level_text, (25, 25))
+                screen.blit(car_cd, (25, 65))
                 start_time = pygame.time.get_ticks()
                 if start_time <= 7000 and hepressed == False:
-                    font = pygame.font.SysFont("Arial", 30)
                     controls = font.render("Controls:", True, (255, 255, 255))
                     w = font.render('W = move forward', True, (255, 255, 255))
                     a = font.render('A = move left', True, (255, 255, 255))
@@ -174,15 +236,46 @@ class Game():
                 sprite_group.draw(screen)
                 pygame.display.update()
                 clock.tick(40)
+            while game_complete:
+                pygame.event.get()
+                font = pygame.font.SysFont("Arial", 30)
+                text_surface = font.render("ta da! u win", True, (255, 255, 255))
+                e = font.render('press the "e" key to continue', True, (255, 255, 255))
+                screen.blit(text_surface, (100, 100))
+                screen.blit(e, (100, 150))
 
+                keys = pygame.key.get_pressed()                
+                if keys[pygame.K_e]:
+                    good_boi = True
+                    random_var1 = True
+                    front = False
+                    game_complete = False
+                    game_over = False
+                    clock = pygame.time.Clock()
+                    last_obstacle_time = pygame.time.get_ticks()
+
+                    # Group for obstacles
+                    obstacles = pygame.sprite.Group()
+
+                    player.rect.x = 250
+                    player.rect.y = 520
+                    player.image = pygame.image.load(dd/"images/frog.png").convert_alpha()
+                    player.image = pygame.transform.scale(player.image, (75, 75))
+                    level += 1
+                    # self.lvl_up()
+                pygame.display.update()
+          
             while game_over:
                 pygame.event.get()
                 keys = pygame.key.get_pressed()
                 oof = font.render('ya died got exploded everyone sad :c', True, (255, 255, 255))
                 reset = font.render("press r to reincarnate", True, (255, 255, 255))
-                screen.blit(oof, (50, 100))
-                screen.blit(reset, (50, 150))
+                screen.blit(oof, (0, 100))
+                screen.blit(reset, (0, 150))
                 if keys[pygame.K_r]:
+                    good_boi = True
+                    random_var1 = True
+                    front = False
                     game_over = False
                     clock = pygame.time.Clock()
                     last_obstacle_time = pygame.time.get_ticks()
