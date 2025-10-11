@@ -89,7 +89,8 @@ class Game():
             return 1
     
     def mainloop(self):
-        random_var1 = False
+        waiting_time = 0
+        last_complete_time = pygame.time.get_ticks()
         front = False
         last_obstacle_time = pygame.time.get_ticks()
         self.keys = pygame.key.get_pressed()
@@ -104,22 +105,25 @@ class Game():
         ismovin = False
         running = True
         bad_boi = False
-        level = 7
+        level = 1
+        true_lvl = level
         good_boi = True
         game_complete = False
         game_over = False
         hepressed = False
+        aa= 0
+        b= 0
+        c= 0
         while running:
             while not game_over and not game_complete:
-                if level >= 5:
-                    if level == 6:
+                if level == "car hell":
                         
                         if pygame.time.get_ticks() - last_obstacle_time > 1000:
 
                             for i in range(4):
                                     self.obstacle_count += Game.add_obstacle(self, obstacles)
                                     last_obstacle_time = pygame.time.get_ticks()
-                    elif level == 7:
+                elif level == "waiting game":
                         if good_boi == True:
                             if pygame.time.get_ticks() - last_obstacle_time > 1200:
                                 last_obstacle_time = pygame.time.get_ticks()
@@ -127,10 +131,10 @@ class Game():
                         else:
                             for i in range(10):
                                 self.obstacle_count += Game.add_obstacle(self, obstacles)
-                        
-                    elif pygame.time.get_ticks() - last_obstacle_time > 350:
-                        last_obstacle_time = pygame.time.get_ticks()
-                        self.obstacle_count += Game.add_obstacle(self, obstacles)
+                elif level >= 5:        
+                    if pygame.time.get_ticks() - last_obstacle_time > 350:
+                            last_obstacle_time = pygame.time.get_ticks()
+                            self.obstacle_count += Game.add_obstacle(self, obstacles)
                 elif pygame.time.get_ticks() - last_obstacle_time > 400 - level*20:
                             last_obstacle_time = pygame.time.get_ticks()
                             self.obstacle_count += Game.add_obstacle(self, obstacles)
@@ -141,7 +145,8 @@ class Game():
                     pygame.display.update()
                 if player.rect.y <= -75:
                     font = pygame.font.SysFont("Arial", 30)
-                    if level == 7 and not pygame.time.get_ticks() < 10000:
+
+                    if level == "waiting game" and pygame.time.get_ticks() - last_complete_time < waiting_time:
                         text_surface = font.render("bad boiii", True, (255, 255, 255))
                         good_boi = False
                     else:
@@ -187,18 +192,20 @@ class Game():
                     prompt = "SCARY :0"
                 if level == 5:
                     prompt = "aw hell naw"
-                if level == 6:
+                if level == "car hell":
                     prompt = "???"
                 # if level == 7:
                 #     prompt = "new york style 💀"
-                if level == 7:
+                if level == "waiting game":
                     prompt = 'huh'
                 if bad_boi == True:
                     prompt = 'BAD BOI'
                 car_cd = font.render(f"cars trafficking level: {prompt}", True, (255, 255, 255))
                 if level == 6:
                     prompt2 = "???"
-                if level == 7:
+                if level == "waiting game":
+
+
                     if not bad_boi == True:
                         prompt2 = "this ez level for break time"
                     else:
@@ -207,10 +214,32 @@ class Game():
                 else:
                     prompt2 = level
                 level_text = font.render(f'Level: {prompt2}', True, (255, 255, 255))
-
+                waiting_text = font.render(f'{waiting_time}', True, (255, 255, 255))
+                if level == "waiting game" or level == "car hell":
+                    aa += 1
+                    b += 2
+                    c += 3
+                    if aa >= 255:
+                        aa = 0
+                    if b >= 255:
+                        b = 0
+                    if c >= 255:
+                        c= 0
+                    special_level = font.render(f'SPECIAL LEVEL!!!', True, (aa, b, c))
+                    
                 screen.blit(BACKGROUND, (0, 0))
                 screen.blit(level_text, (25, 25))
                 screen.blit(car_cd, (25, 65))
+                try:
+                    if level == "waiting game":
+                        screen.blit(waiting_text, (25, 135))
+                except UnboundLocalError:
+                    pass
+                try:
+                    if level == "car hell":
+                        screen.blit(special_level, (25, 100))
+                except UnboundLocalError:
+                    pass
                 start_time = pygame.time.get_ticks()
                 if start_time <= 7000 and hepressed == False:
                     controls = font.render("Controls:", True, (255, 255, 255))
@@ -248,21 +277,33 @@ class Game():
                 keys = pygame.key.get_pressed()                
                 if keys[pygame.K_e]:
                     good_boi = True
-                    random_var1 = True
                     front = False
                     game_complete = False
                     game_over = False
                     clock = pygame.time.Clock()
                     last_obstacle_time = pygame.time.get_ticks()
+                    last_complete_time = pygame.time.get_ticks()
 
                     # Group for obstacles
                     obstacles = pygame.sprite.Group()
-
+                    if not level == true_lvl:
+                        level = true_lvl
+                    else:
+                        level += 1
                     player.rect.x = 250
                     player.rect.y = 520
                     player.image = pygame.image.load(dd/"images/frog.png").convert_alpha()
                     player.image = pygame.transform.scale(player.image, (75, 75))
-                    level += 1
+                    special = random.randint(1, 10)
+                    if special == 5:
+                        print("wahh")
+                        level = "car hell"
+                    elif not special == 1:
+                        print("ayo chill")
+                        level = "waiting game"
+                        waiting_time = random.randint(10000, 50000)
+                    true_lvl += 1
+                    
                     # self.lvl_up()
                 pygame.display.update()
           
@@ -280,8 +321,9 @@ class Game():
                     game_over = False
                     clock = pygame.time.Clock()
                     last_obstacle_time = pygame.time.get_ticks()
-
+                    last_complete_time = pygame.time.get_ticks()
                     # Group for obstacles
+                    
                     obstacles = pygame.sprite.Group()
 
                     player.rect.x = 250
