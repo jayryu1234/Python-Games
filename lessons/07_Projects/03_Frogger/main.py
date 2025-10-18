@@ -22,17 +22,115 @@ class Frog(sprite.Sprite):
     def oof(self):
         self.image = pygame.image.load(dd/"images/explosion1.gif").convert_alpha()
     def update(self, num):
-        if num == 1 and self.rect.y >= -75:
+        if num == 1:
             self.rect.y -= 75
-        if num == 2 and self.rect.y <= 520:
+        if num == 2:
             self.rect.y += 75
         if num == 3 and not self.rect.x <= 0:
             self.rect.x -= 75
         if num == 4 and not self.rect.x >= 525:
             self.rect.x += 75
-        if num == 5:
-            pass
-        
+            
+class laggy1000ping(sprite.Sprite):
+    def __init__(self, column, dir):
+        pygame.sprite.Sprite.__init__(self)
+        self.dir = dir
+        self.lastjump_time = 0
+        self.image = pygame.image.load(dd/"images/Frog.png").convert_alpha()
+
+
+        self.image = pygame.transform.scale(self.image, (75, 75))
+        self.mask = pygame.mask.from_surface(self.image)
+
+        self.rect = self.image.get_rect()
+        if dir == "left":
+            self.rect.x = 0
+        if dir == "right":
+            self.rect.x = 525
+        self.rect.y =520-  column *75
+        self.rect.center = self.rect.center
+    def update(self):
+        # if pygame.time.get_ticks() - self.deathclock >= 1000 and not self.deathclock == 0:
+        #     self.kill()
+        # elif pygame.time.get_ticks() - self.starting_time > 1000:
+        #     self.image = pygame.image.load(dd/"images/explosion1.gif")
+        #     self.deathclock = pygame.time.get_ticks()
+
+        if self.dir == "left" and pygame.time.get_ticks - self.lastjump_time >= 500:
+            if self.rect.right > 525:
+                 self.kill()
+            self.rect.x += 100
+            self.lastjump_time = pygame.time.get_ticks()
+        elif self.dir == "right" and pygame.time.get_ticks - self.lastjump_time >= 500:
+            if self.rect.left < 0:
+                self.kill()
+            self.rect.x -= 100
+class ZZZ(sprite.Sprite):
+    def __init__(self, column, dir, weight):
+        pygame.sprite.Sprite.__init__(self)
+        self.deathclock = 0
+        self.starting_time = pygame.time.get_ticks()
+        self.pounds = weight
+        self.dir = dir
+        if dir == "left":
+            self.image = pygame.image.load(dd/"images/carRight.png").convert_alpha()
+        if dir == "right":
+            self.image = pygame.image.load(dd/"images/carLeft.png").convert_alpha()
+
+        self.image = pygame.transform.scale(self.image, (weight + 50, weight + 50))
+        self.mask = pygame.mask.from_surface(self.image)
+
+        self.rect = self.image.get_rect()
+        if dir == "left":
+            self.rect.x = 0
+        if dir == "right":
+            self.rect.x = 525
+        self.rect.y =520-  column *75
+        self.rect.center = self.rect.center
+    def update(self):
+        if pygame.time.get_ticks() - self.deathclock >= 1000 and not self.deathclock == 0:
+            self.kill()
+        elif pygame.time.get_ticks() - self.starting_time > 1000:
+            self.image = pygame.image.load(dd/"images/explosion1.gif")
+            self.deathclock = pygame.time.get_ticks()
+
+        elif self.dir == "left":
+            if self.rect.right > 525:
+                 self.kill()
+
+            self.rect.x += 5 - self.pounds / 30
+        elif self.dir == "right":
+            if self.rect.left < 0:
+                self.kill()
+            self.rect.x -= 5 - self.pounds / 30
+class Bomb(sprite.Sprite):
+    def __init__(self, column, dir, speed):
+        pygame.sprite.Sprite.__init__(self)
+        self.speed = speed
+        self.dir = dir
+        self.image = pygame.image.load(dd/"images/explosion1.gif").convert_alpha()
+
+        self.image = pygame.transform.scale(self.image, (50, 50))
+        self.mask = pygame.mask.from_surface(self.image)
+
+        self.rect = self.image.get_rect()
+        if dir == "left":
+            self.rect.x = 0
+        if dir == "right":
+            self.rect.x = 525
+        self.rect.y =520-  column *75
+        self.rect.center = self.rect.center
+    def update(self):
+
+        if self.dir == "left":
+            if self.rect.right > 525:
+                 self.kill()
+
+            self.rect.x += 5 + self.speed
+        if self.dir == "right":
+            if self.rect.left < 0:
+                self.kill()
+            self.rect.x -= 5 + self.speed 
 class Car(sprite.Sprite):
     def __init__(self, column, dir):
         pygame.sprite.Sprite.__init__(self)
@@ -70,21 +168,28 @@ class Game():
         pygame.init()
         self.obstacle_count = 0
 
-    def add_obstacle(self, obstacles):
+    def add_obstacle(self, obstacles, type):
         # random.random() returns a random float between 0 and 1, so a value
         # of 0.25 means that there is a 25% chance of adding an obstacle. Since
         # add_obstacle() is called every 100ms, this means that on average, an
         # obstacle will be added every 400ms.
         # The combination of the randomness and the time allows for random
         # obstacles, but not too close together. 
-        
+
             x = random.randint(1, 2)
             if x == 1:
                 dir = "left"
             if x == 2:
                 dir = 'right'
             column = random.randint(1, 5)
-            obstacle = Car(dir = dir, column = column)
+            if type == 1:
+                obstacle = Car(dir = dir, column = column)
+            elif type == 2:
+                obstacle = Bomb(dir = dir, column = column, speed = random.randint(3, 8))
+            elif type == "BIG":
+                obstacle = ZZZ(dir = dir, column = column, weight = random.randint(90, 150))
+            elif type == "LAG":
+                obstacle = laggy1000ping(dir = dir, column = column)
             obstacles.add(obstacle)
             return 1
     
@@ -106,7 +211,7 @@ class Game():
         running = True
         bad_boi = False
         level = 1
-        true_lvl = level
+        true_lvl = 1
         good_boi = True
         game_complete = False
         game_over = False
@@ -116,45 +221,82 @@ class Game():
         c= 0
         while running:
             while not game_over and not game_complete:
+                if level <= -1:
+                    if pygame.time.get_ticks() - last_obstacle_time > 400:
+
+                        self.obstacle_count += Game.add_obstacle(self, obstacles, "LAG")
+                        last_obstacle_time = pygame.time.get_ticks()
                 if level == "car hell":
                         
                         if pygame.time.get_ticks() - last_obstacle_time > 1000:
 
                             for i in range(4):
-                                    self.obstacle_count += Game.add_obstacle(self, obstacles)
+                                    self.obstacle_count += Game.add_obstacle(self, obstacles, 1)
                                     last_obstacle_time = pygame.time.get_ticks()
+                elif level == "BIG MACS":
+                    if pygame.time.get_ticks() - last_obstacle_time > 800:
+                                last_obstacle_time = pygame.time.get_ticks()
+                                self.obstacle_count += Game.add_obstacle(self, obstacles, "BIG")
+                                if random.randint(1, 4) == 2:
+                                    last_obstacle_time = pygame.time.get_ticks()
+                                    self.obstacle_count += Game.add_obstacle(self, obstacles, 2)
                 elif level == "waiting game":
                         if good_boi == True:
                             if pygame.time.get_ticks() - last_obstacle_time > 1200:
                                 last_obstacle_time = pygame.time.get_ticks()
-                                self.obstacle_count += Game.add_obstacle(self, obstacles)
+                                self.obstacle_count += Game.add_obstacle(self, obstacles, 1)
                         else:
                             for i in range(10):
-                                self.obstacle_count += Game.add_obstacle(self, obstacles)
-                elif level >= 5:        
+                                self.obstacle_count += Game.add_obstacle(self, obstacles, 2)
+                elif level >= 5:           
                     if pygame.time.get_ticks() - last_obstacle_time > 350:
-                            last_obstacle_time = pygame.time.get_ticks()
-                            self.obstacle_count += Game.add_obstacle(self, obstacles)
+                                last_obstacle_time = pygame.time.get_ticks()
+                                self.obstacle_count += Game.add_obstacle(self, obstacles, 1)
+                                if random.randint(1, 7) == 2:
+                                    last_obstacle_time = pygame.time.get_ticks()
+                                    self.obstacle_count += Game.add_obstacle(self, obstacles, "2")
                 elif pygame.time.get_ticks() - last_obstacle_time > 400 - level*20:
                             last_obstacle_time = pygame.time.get_ticks()
-                            self.obstacle_count += Game.add_obstacle(self, obstacles)
+                            self.obstacle_count += Game.add_obstacle(self, obstacles, 1)
                 
-                obstacles.update()
-                if player.rect.y >= 520 and front == True:
-                    game_complete = True
-                    pygame.display.update()
-                if player.rect.y <= -75:
-                    font = pygame.font.SysFont("Arial", 30)
 
-                    if level == "waiting game" and pygame.time.get_ticks() - last_complete_time < waiting_time:
-                        text_surface = font.render("bad boiii", True, (255, 255, 255))
-                        good_boi = False
+                obstacles.update()
+                if player.rect.y >= 520:
+                    if front == True:
+                        game_complete = True
+                        pygame.display.update()
+                    if player.rect.y >= 670:
+                        password = input("password?")
+                        if password == "negative 0":
+                            dev_mode = True
+                        game_complete = True
+                        pygame.display.update()
+                if player.rect.y <= -75:
+                    if not player.rect.y <= -200:
+                        font = pygame.font.SysFont("Arial", 30)
+
+                        if level == "waiting game" and pygame.time.get_ticks() - last_complete_time < waiting_time:
+                            text_surface = font.render("bad boiii", True, (255, 255, 255))
+                            good_boi = False
+                        else:
+                            text_surface = font.render("go backk", True, (255, 255, 255))
+                        
+                        front = True
+                        screen.blit(text_surface, (100, 100))
+                        pygame.display.update()
+                    elif player.rect.y <= -200 and player.rect.y >= -1000:
+                        print("stop it")
+                        text_surface = font.render("bro whatya think yar doin", True, (255, 255, 255))
+                        screen.blit(text_surface, (100, 100))
+                        pygame.display.update()
+
+                    elif player.rect.y <= 1000 and player.rect.y >= -2500:
+                        text_surface = font.render("im warning you", True, (255, 255, 255))
+                        screen.blit(text_surface, (100, 100))
+                        pygame.display.update()
                     else:
-                        text_surface = font.render("go backk", True, (255, 255, 255))
-                    
-                    front = True
-                    screen.blit(text_surface, (100, 100))
-                    pygame.display.update()
+                        negativity = True
+
 
                 for event in pygame.event.get():
                     current_time = pygame.time.get_ticks()
@@ -192,17 +334,27 @@ class Game():
                     prompt = "SCARY :0"
                 if level == 5:
                     prompt = "aw hell naw"
+                
                 if level == "car hell":
                     prompt = "???"
+                if level == "BIG MACS":
+                    prompt = "warning warning"
                 # if level == 7:
                 #     prompt = "new york style 💀"
                 if level == "waiting game":
                     prompt = 'huh'
+                try: 
+                    if level >= 6:
+                        prompt = "way 2 hard"
+                except TypeError:
+                    pass
                 if bad_boi == True:
                     prompt = 'BAD BOI'
                 car_cd = font.render(f"cars trafficking level: {prompt}", True, (255, 255, 255))
                 if level == 6:
                     prompt2 = "???"
+                if level == "BIG MACS":
+                    prompt2 = "BIG PEOPLE INCOMIN"
                 if level == "waiting game":
 
 
@@ -214,8 +366,8 @@ class Game():
                 else:
                     prompt2 = level
                 level_text = font.render(f'Level: {prompt2}', True, (255, 255, 255))
-                waiting_text = font.render(f'{waiting_time}', True, (255, 255, 255))
-                if level == "waiting game" or level == "car hell":
+                waiting_text = font.render(f'{waiting_time - (pygame.time.get_ticks() - last_complete_time)}', True, (255, 255, 255))
+                if level == "waiting game" or level == "car hell" or level == "BIG MACS":
                     aa += 1
                     b += 2
                     c += 3
@@ -225,8 +377,11 @@ class Game():
                         b = 0
                     if c >= 255:
                         c= 0
-                    special_level = font.render(f'SPECIAL LEVEL!!!', True, (aa, b, c))
-                    
+                    if not level == "BIG MACS":
+                        special_level = font.render(f'SPECIAL LEVEL!!!', True, (aa, b, c))
+                    else:
+
+                        special_level = font.render(f'TS IS INFLATION', True, (aa, b, c))
                 screen.blit(BACKGROUND, (0, 0))
                 screen.blit(level_text, (25, 25))
                 screen.blit(car_cd, (25, 65))
@@ -236,7 +391,7 @@ class Game():
                 except UnboundLocalError:
                     pass
                 try:
-                    if level == "car hell":
+                    if level == "car hell" or level == "waiting game" or level == "BIG MACS":
                         screen.blit(special_level, (25, 100))
                 except UnboundLocalError:
                     pass
@@ -295,10 +450,12 @@ class Game():
                     player.image = pygame.image.load(dd/"images/frog.png").convert_alpha()
                     player.image = pygame.transform.scale(player.image, (75, 75))
                     special = random.randint(1, 10)
-                    if special == 5:
+                    if special == 6:
+                        level = "BIG MACS"
+                    elif special == 5:
                         print("wahh")
                         level = "car hell"
-                    elif not special == 1:
+                    elif special == 1:
                         print("ayo chill")
                         level = "waiting game"
                         waiting_time = random.randint(10000, 50000)
