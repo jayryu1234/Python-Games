@@ -36,11 +36,16 @@ class laggy1000ping(sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.dir = dir
         self.lastjump_time = 0
-        self.image = pygame.image.load(dd/"images/Frog.png").convert_alpha()
+        self.image = pygame.image.load(dd/"images/frog.png").convert_alpha()
 
 
         self.image = pygame.transform.scale(self.image, (75, 75))
         self.mask = pygame.mask.from_surface(self.image)
+        if self.dir == "left":
+            self.angle = -90
+        else:
+            self.angle = 90
+        self.image = pygame.transform.rotate(self.image, self.angle)
 
         self.rect = self.image.get_rect()
         if dir == "left":
@@ -56,15 +61,16 @@ class laggy1000ping(sprite.Sprite):
         #     self.image = pygame.image.load(dd/"images/explosion1.gif")
         #     self.deathclock = pygame.time.get_ticks()
 
-        if self.dir == "left" and pygame.time.get_ticks - self.lastjump_time >= 500:
+        if self.dir == "left" and pygame.time.get_ticks() - self.lastjump_time >= 500:
             if self.rect.right > 525:
                  self.kill()
             self.rect.x += 100
             self.lastjump_time = pygame.time.get_ticks()
-        elif self.dir == "right" and pygame.time.get_ticks - self.lastjump_time >= 500:
+        elif self.dir == "right" and pygame.time.get_ticks() - self.lastjump_time >= 300:
             if self.rect.left < 0:
                 self.kill()
             self.rect.x -= 100
+            self.lastjump_time = pygame.time.get_ticks()
 class ZZZ(sprite.Sprite):
     def __init__(self, column, dir, weight):
         pygame.sprite.Sprite.__init__(self)
@@ -194,6 +200,10 @@ class Game():
             return 1
     
     def mainloop(self):
+        timebomb = False
+        bdo = False
+        bdo_enabled = False
+        detonation_check =True
         waiting_time = 0
         last_complete_time = pygame.time.get_ticks()
         front = False
@@ -209,6 +219,7 @@ class Game():
         sprite_group.add(player)
         ismovin = False
         running = True
+        null = False
         bad_boi = False
         level = 1
         true_lvl = 1
@@ -220,12 +231,9 @@ class Game():
         b= 0
         c= 0
         while running:
-            while not game_over and not game_complete:
-                if level <= -1:
-                    if pygame.time.get_ticks() - last_obstacle_time > 400:
+            while not game_over and not game_complete and not null:
 
-                        self.obstacle_count += Game.add_obstacle(self, obstacles, "LAG")
-                        last_obstacle_time = pygame.time.get_ticks()
+
                 if level == "car hell":
                         
                         if pygame.time.get_ticks() - last_obstacle_time > 1000:
@@ -248,13 +256,17 @@ class Game():
                         else:
                             for i in range(10):
                                 self.obstacle_count += Game.add_obstacle(self, obstacles, 2)
+                elif int(level) <= -1:
+                    if pygame.time.get_ticks() - last_obstacle_time > 600:
+                        self.obstacle_count += Game.add_obstacle(self, obstacles, "LAG")
+                        last_obstacle_time = pygame.time.get_ticks()
                 elif level >= 5:           
                     if pygame.time.get_ticks() - last_obstacle_time > 350:
                                 last_obstacle_time = pygame.time.get_ticks()
                                 self.obstacle_count += Game.add_obstacle(self, obstacles, 1)
                                 if random.randint(1, 7) == 2:
                                     last_obstacle_time = pygame.time.get_ticks()
-                                    self.obstacle_count += Game.add_obstacle(self, obstacles, "2")
+                                    self.obstacle_count += Game.add_obstacle(self, obstacles, 2)
                 elif pygame.time.get_ticks() - last_obstacle_time > 400 - level*20:
                             last_obstacle_time = pygame.time.get_ticks()
                             self.obstacle_count += Game.add_obstacle(self, obstacles, 1)
@@ -268,7 +280,47 @@ class Game():
                     if player.rect.y >= 670:
                         password = input("password?")
                         if password == "negative 0":
-                            dev_mode = True
+                            print("""i = invincibility
+                                  n = negative world
+                                  t = teleport to level
+                                  bdo = back delay off (op, and press q if you want to toggle (after u enable bdo))
+                                  a = ascension
+                                  n = nuclear bomb""")
+                            dev_console = input("what console do you want to use?")
+                            if dev_console == "n":
+                                random1 = input("time or detonation? (time = t detonation = d)")
+                                if random1 == "t":
+                                    random2 = input("level or ticks? (lvl = l, ticks = t)")
+                                    if random2 == "l":
+                                        timebomb_lvl = input("what level >:D")
+                                        timebomb = True
+                                        
+                                    if random2 == "t":
+                                        timebombticks = input("how many ticks till doom? >:)))))")
+                                        timebomb = True
+
+                                if random1 == "d":
+                                    print("kkk, press b to cause some TROLLINNN")
+                                    detonation_check =True
+
+                            if dev_console == "t":
+                                tp_level = input("what lvl do ya wana teleport 2")
+
+                                try:
+                                    level = int(tp_level) - 1
+                                    if int(level) == level:
+                                        true_lvl = level
+                                except ValueError:
+                                    level = tp_level
+                                game_over = True
+                            elif dev_console == "bdo":
+                                bdo_enabled = True
+                                game_over = True
+                        else:
+                            print("WRONGGGGGG GETTTOUTTTT")
+                            while True:
+                                self.add_obstacle(obstacles, type= "BIG")
+
                         game_complete = True
                         pygame.display.update()
                 if player.rect.y <= -75:
@@ -285,7 +337,6 @@ class Game():
                         screen.blit(text_surface, (100, 100))
                         pygame.display.update()
                     elif player.rect.y <= -200 and player.rect.y >= -1000:
-                        print("stop it")
                         text_surface = font.render("bro whatya think yar doin", True, (255, 255, 255))
                         screen.blit(text_surface, (100, 100))
                         pygame.display.update()
@@ -295,24 +346,39 @@ class Game():
                         screen.blit(text_surface, (100, 100))
                         pygame.display.update()
                     else:
-                        negativity = True
-
+                        level = -2
+                        true_lvl = level
+                        game_complete = True
 
                 for event in pygame.event.get():
                     current_time = pygame.time.get_ticks()
                     if event.type == pygame.QUIT:
                         running = False
                     if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_b and detonation_check == True:
+                            null = True
+                        if event.key == pygame.K_q and bdo_enabled == True:
+                            if bdo == True:
+                                bdo = False
+                            if bdo == False:
+                                bdo = True
                         if event.key == pygame.K_w and not ismovin:
                             last_hold_time = current_time
                             player_group.update(1)
                             ismovin = True
                             hepressed = True
-                        elif event.key == pygame.K_s and current_time - last_hold_time >= 500:
-                            last_hold_time = current_time
-                            player_group.update(2)
-                            hepressed = True
-                            ismovin = True
+                        elif event.key == pygame.K_s:
+                            if bdo == True:
+                                last_hold_time = current_time
+                                player_group.update(2)
+                                hepressed = True
+                                ismovin = True
+                            else:
+                                if current_time - last_hold_time >= 500:
+                                    last_hold_time = current_time
+                                    player_group.update(2)
+                                    hepressed = True
+                                    ismovin = True
                         elif event.key == pygame.K_a and not ismovin:
                             player_group.update(3)
                             ismovin = True
@@ -367,7 +433,7 @@ class Game():
                     prompt2 = level
                 level_text = font.render(f'Level: {prompt2}', True, (255, 255, 255))
                 waiting_text = font.render(f'{waiting_time - (pygame.time.get_ticks() - last_complete_time)}', True, (255, 255, 255))
-                if level == "waiting game" or level == "car hell" or level == "BIG MACS":
+                if level == "waiting game" or level == "car hell" or level == "BIG MACS" or timebomb == True:
                     aa += 1
                     b += 2
                     c += 3
@@ -377,11 +443,15 @@ class Game():
                         b = 0
                     if c >= 255:
                         c= 0
-                    if not level == "BIG MACS":
+
+                    if not level == "BIG MACS" or not timebomb == True:
                         special_level = font.render(f'SPECIAL LEVEL!!!', True, (aa, b, c))
-                    else:
+                    elif level == 'BIG MACS':
 
                         special_level = font.render(f'TS IS INFLATION', True, (aa, b, c))
+                    elif timebomb == True:
+                        timebombtickstext = font.render(f'time till doom!{timebombticks- pygame.time.get_ticks()}', True, (aa, b, c))
+                        screen.blit(timebombtickstext, True, (25, 100))
                 screen.blit(BACKGROUND, (0, 0))
                 screen.blit(level_text, (25, 25))
                 screen.blit(car_cd, (25, 65))
@@ -391,11 +461,18 @@ class Game():
                 except UnboundLocalError:
                     pass
                 try:
-                    if level == "car hell" or level == "waiting game" or level == "BIG MACS":
+                    if level == "car hell" or level == "waiting game" or level == "BIG MACS" and not timebomb == True:
                         screen.blit(special_level, (25, 100))
                 except UnboundLocalError:
                     pass
+                try:
+
+                    if timebombticks - pygame.time.get_ticks <= 0:
+                        null = True
+                except UnboundLocalError:
+                    pass
                 start_time = pygame.time.get_ticks()
+                
                 if start_time <= 7000 and hepressed == False:
                     controls = font.render("Controls:", True, (255, 255, 255))
                     w = font.render('W = move forward', True, (255, 255, 255))
@@ -450,20 +527,41 @@ class Game():
                     player.image = pygame.image.load(dd/"images/frog.png").convert_alpha()
                     player.image = pygame.transform.scale(player.image, (75, 75))
                     special = random.randint(1, 10)
-                    if special == 6:
-                        level = "BIG MACS"
-                    elif special == 5:
-                        print("wahh")
-                        level = "car hell"
-                    elif special == 1:
-                        print("ayo chill")
-                        level = "waiting game"
-                        waiting_time = random.randint(10000, 50000)
+                    if not level <= -1:
+
+                        if special == 6:
+                            level = "BIG MACS"
+                        elif special == 5:
+                            print("wahh")
+                            level = "car hell"
+                        elif special == 1:
+                            print("ayo chill")
+                            level = "waiting game"
+                            waiting_time = random.randint(10000, 50000)
                     true_lvl += 1
                     
                     # self.lvl_up()
                 pygame.display.update()
-          
+            while null:
+                screen.fill((0, 0, 0))
+                font = pygame.font.SysFont("Arial", 30)
+                pygame.event.get()
+                keys = pygame.key.get_pressed()
+                oof = font.render('you just got jebaited', True, (255, 255, 255))
+                reset = font.render("press t for a chance to come back.", True, (255, 255, 255))
+                screen.blit(oof, (0, 100))
+                screen.blit(reset, (0, 150))
+                if keys[pygame.K_t]:
+                    lol = font.render('now press f', True, (255, 255, 255))
+                    screen.blit(lol, (0, 190))
+                if keys[pygame.K_f]:
+                    more = font.render('now press z', True, (255, 255, 255))
+                    screen.blit(more, (0, 230))
+                if keys[pygame.K_z]:
+                    heh = font.render('good boiii XD', True, (255, 255, 255))
+                    screen.blit(heh, (0, 270))
+
+                pygame.display.update()
             while game_over:
                 pygame.event.get()
                 keys = pygame.key.get_pressed()
