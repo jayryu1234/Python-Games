@@ -590,7 +590,7 @@ class Game():
                 elif keys[pygame.K_4]:
                     final_Q = font.render("if 6 is 3 and 7 is 5, then whats 11?", True, (255, 255, 255))
                     screen.blit(final_Q, (0, 270))
-                elif keys[pygame.K_7]:
+                elif keys[pygame.K_6]:
                     gg = font.render("gg man, press 0 to leave, then press e", True, (255, 255, 255))
                     screen.blit(gg, (0, 190))
                 elif keys[pygame.K_0]:
