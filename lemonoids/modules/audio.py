@@ -2,11 +2,12 @@ import pygame
 
 #pygame.mixer.music.load("assets/SFX/BGM_SpamtonCD_perfectloop.wav")
 #pygame.mixer.music.play(-1)'
-
+from pathlib import Path
+dd = Path(__file__).parent
 pygame.mixer.init()
 VOLUME = 1
 SOUND = 0
-bgm = {     "COLOR" : ("lemonoids/assets/FF9CAE.wav"),
+bgm = {     "COLOR" : ("lemonoids/assets/SFX/FF9CAE.wav"),
             'STAGE' : ("lemonoids/assets/SFX/MAIN_THEME.wav"),
             'SPAMTON' : ("lemonoids/assets/SFX/BGM_SpamtonCD_perfectloop.wav"),
             'BLUUDUDE' : ("lemonoids/assets/SFX/BGMFB_BLUUDUDE_CHASE_THEME.wav"),

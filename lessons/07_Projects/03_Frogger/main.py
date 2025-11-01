@@ -298,6 +298,7 @@ class Game():
                                     if random2 == "t":
                                         timebombticks = input("how many ticks till doom? >:)))))")
                                         timebomb = True
+                                        bombcreattime = pygame.time.get_ticks()
 
                                 if random1 == "d":
                                     print("kkk, press b to cause some TROLLINNN")
@@ -446,12 +447,12 @@ class Game():
 
                     if not level == "BIG MACS" or not timebomb == True:
                         special_level = font.render(f'SPECIAL LEVEL!!!', True, (aa, b, c))
-                    elif level == 'BIG MACS':
+                    if level == 'BIG MACS':
 
                         special_level = font.render(f'TS IS INFLATION', True, (aa, b, c))
-                    elif timebomb == True:
-                        timebombtickstext = font.render(f'time till doom!{timebombticks- pygame.time.get_ticks()}', True, (aa, b, c))
-                        screen.blit(timebombtickstext, True, (25, 100))
+                    if timebomb == True:
+                        timebombtickstext = font.render(f'time till doom! {int(timebombticks)- (pygame.time.get_ticks() - bombcreattime)}', True, (aa, b, c))
+                        
                 screen.blit(BACKGROUND, (0, 0))
                 screen.blit(level_text, (25, 25))
                 screen.blit(car_cd, (25, 65))
@@ -466,8 +467,8 @@ class Game():
                 except UnboundLocalError:
                     pass
                 try:
-
-                    if timebombticks - pygame.time.get_ticks <= 0:
+                    screen.blit(timebombtickstext, (25, 100))
+                    if int(timebombticks) - (pygame.time.get_ticks() -bombcreattime) <= 0:
                         null = True
                 except UnboundLocalError:
                     pass
@@ -547,6 +548,7 @@ class Game():
                 font = pygame.font.SysFont("Arial", 30)
                 pygame.event.get()
                 keys = pygame.key.get_pressed()
+                riddle_font = pygame.font.SysFont("Display", 20)
                 oof = font.render('you just got jebaited', True, (255, 255, 255))
                 reset = font.render("press t for a chance to come back.", True, (255, 255, 255))
                 screen.blit(oof, (0, 100))
@@ -558,8 +560,43 @@ class Game():
                     more = font.render('now press z', True, (255, 255, 255))
                     screen.blit(more, (0, 230))
                 if keys[pygame.K_z]:
-                    heh = font.render('good boiii XD', True, (255, 255, 255))
+                    heh = font.render('good boiii XD, now press r to go back', True, (255, 255, 255))
                     screen.blit(heh, (0, 270))
+                if keys[pygame.K_r]:
+                    jk = font.render('hah im lying of course', True, (255, 255, 255))
+                    jkk = font.render("if u are bored press a", True, (255, 255, 255))
+                    screen.blit(jk, (0, 310))
+                    screen.blit(jkk, (0, 350))
+                elif keys[pygame.K_a]:
+                    lol = font.render("welp ya are bored so les play this game", True, (255, 255, 255))
+                    minigame_instruction = font.render("find the next key and press it", True, (255, 255, 255))
+                    screen.blit(lol, (0, 190))
+                    screen.blit(minigame_instruction, (0, 230))
+                    minigame_element1 = font.render("press the 24th letter from the alphabet", True, (255, 255, 255))
+                    screen.blit(minigame_element1, (random.randint(0, 600), random.randint(-300, 300)))
+                elif keys[pygame.K_x]:
+                    minigame_element2 = riddle_font.render("""I am in the beginning of youth, the center of every eye, and the end of eternity. What am i?""", True, (255, 255, 255))
+                    loser = font.render("if yar a loser and u dont know press l", True, (255, 255, 255))
+                    screen.blit(minigame_element2, (0, 250))
+                    screen.blit(loser, (0, 280))
+                elif keys[pygame.K_l]:
+                    loser = font.render("LOSER LOSER LOSER hahaha", True, (255, 255, 255))
+                    more = font.render("press y LOSER", True, (255, 255, 255))
+                    screen.blit(loser, (0, 230))
+                    screen.blit(more, (0, 270))
+                elif keys[pygame.K_y]:
+                    seventhgrademath = font.render("if x^2 + 8x +16 = 0, whats abs(x)?", True, (255, 255, 255))
+                    screen.blit(seventhgrademath, (0, 190))
+                elif keys[pygame.K_4]:
+                    final_Q = font.render("if 6 is 3 and 7 is 5, then whats 11?", True, (255, 255, 255))
+                    screen.blit(final_Q, (0, 270))
+                elif keys[pygame.K_7]:
+                    gg = font.render("gg man, press 0 to leave, then press e", True, (255, 255, 255))
+                    screen.blit(gg, (0, 190))
+                elif keys[pygame.K_0]:
+                    null = False
+                    timebomb = False
+                    game_complete = True
 
                 pygame.display.update()
             while game_over:
@@ -592,4 +629,3 @@ if __name__ == "__main__":
     pygame.init()
     game = Game()
     game.mainloop()
-
