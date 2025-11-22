@@ -61,14 +61,14 @@ class Player(sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = 250
-        self.rect.y = 520
+        self.rect.y = 250
         self.rect.center = self.rect.center
 
     def update(self):
         keys = pygame.key.get_pressed()
 
         # Move the square based on arrow keys
-        if keys[K_w] and self.rect.y >= 150:
+        if keys[K_w] and self.rect.y >= 20:
            self.rect.y -= 5
         if keys[K_s] and self.rect.y <= 480:
             self.rect.y += 5
@@ -126,9 +126,10 @@ class Game(sprite.Sprite):
     def __init__(self):
         pygame.init()
         self.score = 0
+        self.life = 3
         self.asteroids_count = 0
 
-    def add_asteroid(self, obstacles):
+    def add_asteroid(self, obstacles, size):
 
         side = random.choice(['top','bottom','left','right'])
         w, h = pygame.display.get_surface().get_size()
@@ -138,13 +139,11 @@ class Game(sprite.Sprite):
         elif side == 'right': pos = (w+20,random.randint(0,h))
 
         randomnumber = random.randint(1, 4)
-        if randomnumber == 1 or randomnumber == 4:
+        if randomnumber == 1 or randomnumber == 3 or randomnumber == 4:
             img = "spaceMeteors_001.png"
-        elif randomnumber == 2:
-            img = "asteroid1.png"
         else:
             img = "alien1.gif"
-        asteroids = Asteroids(pos = pos, img = img, size = 3)
+        asteroids = Asteroids(pos = pos, img = img, size = size)
         obstacles.add(asteroids)
         return 1
     
@@ -152,6 +151,8 @@ class Game(sprite.Sprite):
         aa = 0
         b = 0
         c = 0
+        game_over = False
+        bigfont = pygame.font.SysFont("Arial", 250)
         mouse_held_down = False
         last_obstacle_time = pygame.time.get_ticks()
         last_shot_time = 0
@@ -168,165 +169,264 @@ class Game(sprite.Sprite):
         sprite_group = pygame.sprite.Group()
         EMP_FLURRY = False
         RUSH_HOUR = False
+        RAPID = False
         sprite_group.add(player)
-
-        while True:
-            if self.score <= 15:
-                bullet_refill = 200
-            elif self.score < 75:
-                bullet_refill = 150
-            elif self.score < 150:
-                bullet_refill = 100
-            elif self.score < 250:
-                bullet_refill = 75
-            self.keys = pygame.key.get_pressed()
-
-            screen.fill((0, 0, 0))
-            #reroll for perks :P
-            if pygame.time.get_ticks() - last_reroll_time >= 5000:
-
-                last_reroll_time = pygame.time.get_ticks()
-                chance = random.randint(1, 5)
-                if chance == 1:
-                    EMP_FLURRY = True
-                    flurry_time = pygame.time.get_ticks()
-                    
-                    print("O YA")
-                elif not chance == 2:
-                    RUSH_HOUR = True
-                
-                reroll_text = font.render("reroll", True, (255, 255, 0))
-                screen.blit(reroll_text, (250, 300))
-            for event in pygame.event.get():
-                if self.keys[K_SPACE]:
-                    #EMP :P
-                    if not EMP_FLURRY:
-                        current_time = pygame.time.get_ticks()
-                        if current_time - last_EMP_time >= 10000:
-                            last_EMP_time = current_time
-                            EMP= Bullets(
-                                player.rect.x,
-                                player.rect.y,
-                                player.angle,
-                                "EMP"
-                            )
-                            specials_group.add(EMP)
-                            sprite_group.add(EMP)
-                    else:
-                        current_time = pygame.time.get_ticks()
-                        if current_time - last_EMP_time >= 100:
-                            last_EMP_time = current_time
-                            EMP= Bullets(
-                                player.rect.x,
-                                player.rect.y,
-                                player.angle,
-                                "TINY"
-                            )
-                            specials_group.add(EMP)
-                            sprite_group.add(EMP)
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    #checking if its down
-                    if event.button == 1:  # Left mouse button
-                        mouse_held_down = True
-                elif event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
-                        mouse_held_down = False
-    
-                if event.type == QUIT:
-                    pygame.quit()
-
-            #check if emp flurry is up
-            if EMP_FLURRY:
-                if pygame.time.get_ticks() - flurry_time >= 5000:
-                    EMP_FLURRY = False
-            # Check if enough time has passed to fire another shot
-            if mouse_held_down:
-                current_time = pygame.time.get_ticks()
-                if current_time - last_shot_time >= bullet_refill:
-                    last_shot_time = current_time
-                    bullets = Bullets(
-                    player.rect.x,
-                    player.rect.y,
-                    player.angle,
-                    "normal"
-                )      
-                
-                    bullet_group.add(bullets)
-                    sprite_group.add(bullets)
-            if RUSH_HOUR:
-                for i in range(random.randint(5, 10)):
-                    if pygame.time.get_ticks() - last_obstacle_time > 300 - pygame.time.get_ticks()//50 + self.score:
-                        last_obstacle_time = pygame.time.get_ticks()
-                        self.asteroids_count += Game.add_asteroid(self, enemy_group)
-                RUSH_HOUR = False
-            if pygame.time.get_ticks() - last_obstacle_time > 800 - pygame.time.get_ticks()//50 + self.score:
-                        last_obstacle_time = pygame.time.get_ticks()
-                        self.asteroids_count += Game.add_asteroid(self, enemy_group)
-                
-            
-        #update (enemy + player)
-            
-            enemy_group.update()
-
-            enemy_group.draw(screen)
-            
-            sprite_group.update()
-            sprite_group.draw(screen)
-            font = pygame.font.SysFont("Arial", 30)
-            if EMP_FLURRY:
-                emp_left = 100 - (pygame.time.get_ticks() - last_EMP_time)
-            else:
-                emp_left = 10000 - (pygame.time.get_ticks() - last_EMP_time)
-            if emp_left <= 0:
-                emp_left = 0
-            if EMP_FLURRY:
-                aa += 1
-                b += 2
-                c += 3
-                if aa >= 255:
-                    aa = 0
-                if b >= 255:
-                    b = 0
-                if c >= 255:
-                    c= 0
-                emp_time = font.render(f"EMP FLURRY GOGOGO {5000 - pygame.time.get_ticks() + flurry_time}", True, (aa, b, c))
-            elif RUSH_HOUR:
-                emp_time = font.render(f"RUSH HOUR", True, (255, 255, 255))
-            else:
-                emp_time = font.render(f"EMP :P {emp_left}", True, (255, 255, 255))
-            reroll_time = 5000 - pygame.time.get_ticks() + last_reroll_time
-            if RUSH_HOUR:
-                reroll = font.render("KILL THEM ALLL")
-            elif EMP_FLURRY:
-                reroll = font.render("I CaNT StOp WInnInG", True, (255, 0, 0))
-            else:
-                reroll = font.render(f"reroll: {reroll_time}", True, (255, 0, 255))
-            screen.blit(reroll, (10, 40))
-            screen.blit(emp_time, (10, 100))
-            score_text = font.render(f"Score: {self.score}", True, (255,255,0))
-            screen.blit(score_text, (10, 70))
-            pygame.display.update()
-            clock.tick(40)
-            hits = pygame.sprite.groupcollide(enemy_group, bullet_group ,False,True)
-            hits2 = pygame.sprite.groupcollide(enemy_group, specials_group, True, False)
-            for meteor, bs in hits.items():
-                meteor.health -= len(bs) * 8 # player damage
-
-                if meteor.health <= 0:
-                    for frag in meteor.split():
-                        self.score += 1
-                        enemy_group.add(frag)
-
-                    meteor.kill()
+        running = True
+        while running:
+            while not game_over:
+                if RAPID:
+                    bullet_refill = 0
                 else:
+                    if self.score <= 15:
+                        bullet_refill = 200
+                    elif self.score < 75:
+                        bullet_refill = 150
+                    elif self.score < 150:
+                        bullet_refill = 100
+                    elif self.score < 250:
+                        bullet_refill = 75
+                self.keys = pygame.key.get_pressed()
+
+                screen.fill((0, 0, 0))
+                #reroll for perks :P
+                if pygame.time.get_ticks() - last_reroll_time >= 5000:
+
+                    last_reroll_time = pygame.time.get_ticks()
+                    chance = random.randint(1, 5)
+                    print(chance)
+                    if chance == 1:
+                        print("ts might need a nerf")
+                        EMP_FLURRY = True
+                        flurry_time = pygame.time.get_ticks()
+                        
+                    elif chance == 2:
+                        print("oh no")
+                        RUSH_HOUR = True
+                    
+                    elif chance == 3:
+                        BIG_TIME = True
+                    
+                    elif chance == 4:
+                        print('BANG BANG')
+                        RAPID = True
+                        rapid_time = pygame.time.get_ticks()
+                        print(rapid_time)
+                    
+                    reroll_text = font.render("reroll", True, (255, 255, 0))
+                    screen.blit(reroll_text, (250, 300))
+                    
+                for event in pygame.event.get():
+                    if self.keys[K_SPACE]:
+                        #EMP :P
+                        if not EMP_FLURRY:
+                            #emp time *if its flurry
+
+                            current_time = pygame.time.get_ticks()
+                            if current_time - last_EMP_time >= 10000:
+                                last_EMP_time = current_time
+                                EMP= Bullets(
+                                    player.rect.x,
+                                    player.rect.y,
+                                    player.angle,
+                                    "EMP"
+                                )
+                                specials_group.add(EMP)
+                                sprite_group.add(EMP)
+                        else:
+                            #normal emp
+
+                            current_time = pygame.time.get_ticks()
+                            if current_time - last_EMP_time >= 250:
+                                last_EMP_time = current_time
+                                EMP= Bullets(
+                                    player.rect.x,
+                                    player.rect.y,
+                                    player.angle,
+                                    "TINY"
+                                )
+                                specials_group.add(EMP)
+                                sprite_group.add(EMP)
+
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        #checking if its down
+                        if event.button == 1:  # Left mouse button
+                            mouse_held_down = True
+                    if event.type == pygame.MOUSEBUTTONUP:
+                        if event.button == 1:
+                            mouse_held_down = False
+        
+                    if event.type == QUIT:
+                        running = False
+
+                #check if emp flurry is up
+                if EMP_FLURRY:
+                    if pygame.time.get_ticks() - flurry_time >= 5000:
+                        EMP_FLURRY = False
+                
+                #check if rapidfire is up
+
+                if RAPID:
+                    if pygame.time.get_ticks() - rapid_time >= 5000:
+                        print("bai")
+                        RAPID = False
+
+
+                # Check if enough time has passed to fire another shot
+                if mouse_held_down:
+
+                    current_time = pygame.time.get_ticks()
+                    if current_time - last_shot_time >= bullet_refill:
+                        last_shot_time = current_time
+                        bullets = Bullets(
+                        player.rect.x,
+                        player.rect.y,
+                        player.angle,
+                        "normal"
+                    )      
+                    
+                        bullet_group.add(bullets)
+                        sprite_group.add(bullets)
+
+                if RUSH_HOUR:
+
+                    for i in range(random.randint(5, 10)):
+                        rushtext = bigfont.render("RUSH", True, (0, 255, 0))
+                        screen.blit(rushtext, (0, 0))
+                        print('AG')
+                        if pygame.time.get_ticks() - last_obstacle_time > 200 - pygame.time.get_ticks()//50 + self.score:
+                            last_obstacle_time = pygame.time.get_ticks()
+                            self.asteroids_count += Game.add_asteroid(self, enemy_group, 3)
+                    RUSH_HOUR = False
+
+                elif pygame.time.get_ticks() - last_obstacle_time > 800 - pygame.time.get_ticks()//75 + self.score:
+                            last_obstacle_time = pygame.time.get_ticks()
+                            self.asteroids_count += Game.add_asteroid(self, enemy_group, 3)
+
+                try:
+                    if BIG_TIME:
+                        BIG_TEXT = bigfont.render("BIGS", True, (0, 255, 0))
+                        screen.blit(BIG_TEXT, (0, 0))
+
+                        last_obstacle_time = pygame.time.get_ticks()
+                        self.asteroids_count += Game.add_asteroid(self, enemy_group, 8)
+                    BIG_TIME = False
+
+                except UnboundLocalError:
+
                     pass
-            for meteor, bs in hits2.items():
-                self.score += 0.5
-                meteor.kill()
-            self.score = math.ceil(self.score)
-            # pygame.sprite.groupcollide(bullet_group, enemy_group, True, True, pygame.sprite.collide_mask)
-            
-            pygame.sprite.groupcollide(player_group, enemy_group, True, True, pygame.sprite.collide_mask)
+                        
+            #update (enemy + player)
+                
+                enemy_group.update()
+
+                enemy_group.draw(screen)
+                
+                sprite_group.update()
+                sprite_group.draw(screen)
+                font = pygame.font.SysFont("Arial", 30)
+                if EMP_FLURRY:
+                    emp_left = 250 - (pygame.time.get_ticks() - last_EMP_time)
+                else:
+                    emp_left = 10000 - (pygame.time.get_ticks() - last_EMP_time)
+
+                if emp_left <= 0:
+                    emp_left = 0
+                if RAPID:
+                    rapid_left = 5000 - pygame.time.get_ticks() + rapid_time
+                else:
+                    rapid_left = 0
+
+                if rapid_left <= 0:
+                    rapid_left = 0
+
+                if EMP_FLURRY or RAPID:
+                    aa += 1
+                    b += 2
+                    c += 3
+                    if aa >= 255:
+                        aa = 0
+                    if b >= 255:
+                        b = 0
+                    if c >= 255:
+                        c= 0
+                    if EMP_FLURRY:
+                        emp_time = font.render(f"EMP FLURRY GOGOGO {5000 - pygame.time.get_ticks() + flurry_time}", True, (aa, b, c))
+                    else:
+                        emp_time = font.render(f"RAPIDFIREEE {5000 - pygame.time.get_ticks() + rapid_time}", True, (aa, b, c))
+
+                else:
+
+                    emp_time = font.render(f"EMP :P {emp_left}", True, (255, 255, 255))
+
+                reroll_time = 5000 - pygame.time.get_ticks() + last_reroll_time
+                if self.life > 1:
+                    life_text = font.render(f"{self.life} lives left", True, (0, 255, 255))
+                else:
+                    life_text = font.render(f"1 life left", True, (0, 255, 255))
+
+                if EMP_FLURRY or RAPID:
+                    reroll = font.render("I CaNT StOp WInnInG", True, (255, 0, 0))
+                else:
+                    reroll = font.render(f"reroll: {reroll_time}", True, (255, 0, 255))
+                screen.blit(life_text, (10, 130))
+                screen.blit(reroll, (10, 40))
+                screen.blit(emp_time, (10, 100))
+                score_text = font.render(f"Score: {self.score}", True, (255,255,0))
+                screen.blit(score_text, (10, 70))
+                pygame.display.update()
+                clock.tick(40)
+                hits = pygame.sprite.groupcollide(enemy_group, bullet_group ,False,True)
+                hits2 = pygame.sprite.groupcollide(enemy_group, specials_group, True, False)
+
+                for meteor, bs in hits.items():
+                    meteor.health -= len(bs) * 8 # player damage
+
+                    if meteor.health <= 0:
+                        for frag in meteor.split():
+                            self.score += 1
+                            enemy_group.add(frag)
+
+                        meteor.kill()
+                    else:
+                        pass
+                for meteor, bs in hits2.items():
+                    self.score += 0.5
+                    meteor.kill()
+                self.score = math.ceil(self.score)
+                # pygame.sprite.groupcollide(bullet_group, enemy_group, True, True, pygame.sprite.collide_mask)
+                
+                player_hit = pygame.sprite.groupcollide(enemy_group, player_group, False, False, pygame.sprite.collide_mask)
+                for meteor, oof in player_hit.items():
+                    meteor.kill()
+                    self.life -= 1
+                    if self.life <= 0:
+
+                        game_over = True
+            while game_over:
+
+                pygame.event.get()
+                keys = pygame.key.get_pressed()
+                oof = font.render('ya died got exploded everyone sad :c', True, (255, 255, 255))
+                reset = font.render("press r to reincarnate", True, (255, 255, 255))
+                screen.blit(oof, (0, 100))
+                screen.blit(reset, (0, 150))
+
+                if keys[pygame.K_r]:
+                    game_over = False
+                    clock = pygame.time.Clock()
+                    last_obstacle_time = pygame.time.get_ticks()
+                    last_complete_time = pygame.time.get_ticks()
+
+                    # Group for obstacles              
+                    obstacles = pygame.sprite.Group()
+
+                    player.rect.x = 250
+                    player.rect.y = 250
+                    player.image = pygame.image.load(dd/"images/ship.png").convert_alpha()
+                    player.image = pygame.transform.scale(player.image, (75, 75))
+
+                pygame.display.update()
+
                   
 
 
